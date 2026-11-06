@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#2c7a4b">
+<meta name="description" content="FARFURIA — offline digital dietitian: personalised calories, macros, 7-day meal plan and food diary. MIT, trade-free, no tracking.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-YtIR2sRr5Rf1/KzNNCmkw+CTb9BMfCo42cbeRdVQb5M='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>FARFURIA — dietetician digital</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='18' fill='%23e6f2ea' stroke='%232c7a4b' stroke-width='2'/%3E%3Ccircle cx='20' cy='20' r='11' fill='white' stroke='%232c7a4b' stroke-width='1.5'/%3E%3Cpath d='M20 20L20 9A11 11 0 0 1 29.5 25.5Z' fill='%23e0a030'/%3E%3Cpath d='M20 20L29.5 25.5A11 11 0 0 1 10.5 25.5Z' fill='%232c7a4b'/%3E%3Cpath d='M20 20L10.5 25.5A11 11 0 0 1 20 9Z' fill='%234a7fb5'/%3E%3C/svg%3E">
+<!--
+  FARFURIA — dietetician digital · digital dietitian
+  MIT License · Copyright (c) Alexandru-Ionuț Chiuță (Alexio)
+  Single-file, offline, trade-free: no servers, no trackers, no accounts.
+  Educational tool — not medical advice.
+-->
+<style>
+:root{color-scheme:light dark;--bg:#f6f4ec;--card:#ffffff;--ink:#1d2a23;--mut:#55655b;--acc:#2c7a4b;--onacc:#ffffff;--acc2:#e6f2ea;--warn:#8f5a08;--warn2:#fdf1dc;--bad:#b3392c;--line:#d5ddd5;--c1:#2c7a4b;--c2:#c98a14;--c3:#3b6fa5;--r:14px;--gap:14px;--navh:62px}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#111815;--card:#1a2420;--ink:#e7eee9;--mut:#a4b6aa;--acc:#5fc08a;--onacc:#08130d;--acc2:#21332a;--warn:#e3ab4f;--warn2:#3a2e17;--bad:#ef8174;--line:#2d3d34;--c1:#5fc08a;--c2:#e3ab4f;--c3:#7fb0e0}}
+:root[data-theme=dark]{color-scheme:dark;--bg:#111815;--card:#1a2420;--ink:#e7eee9;--mut:#a4b6aa;--acc:#5fc08a;--onacc:#08130d;--acc2:#21332a;--warn:#e3ab4f;--warn2:#3a2e17;--bad:#ef8174;--line:#2d3d34;--c1:#5fc08a;--c2:#e3ab4f;--c3:#7fb0e0}
+:root[data-theme=light]{color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:130px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+header.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.hrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:max(8px,env(safe-area-inset-top));padding-bottom:8px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{flex:none;width:36px;height:36px}
+h1{margin:0;font-size:1.2rem;letter-spacing:.12em;line-height:1.1}
+#sub{display:none;margin:2px 0 0;font-size:.8rem;color:var(--mut);line-height:1.3;max-width:62ch}
+.tools{display:flex;gap:6px;flex:none}
+.tools select{max-width:132px}
+#theme{min-width:44px;padding:8px;line-height:0}
+select,input[type=number],input[type=date],input[type=text]{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-width:100%;min-height:44px}
+input[type=date]{min-width:0}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;min-height:44px}
+button.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc);font-weight:600}
+button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--c3);outline-offset:2px}
+button:active{transform:translateY(1px)}
+/* navigation: bottom bar on phones, pills from 700px */
+nav#tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));background:var(--card);border-top:1px solid var(--line);padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+nav#tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:var(--navh);border:0;border-radius:0;background:none;color:var(--mut);padding:6px 2px;font-size:.68rem;line-height:1.15;min-width:0}
+nav#tabs button span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+nav#tabs button.on{color:var(--acc);font-weight:600;box-shadow:inset 0 3px 0 var(--acc)}
+nav#tabs svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+main{padding:16px 0 24px}
+footer{padding:8px 0 calc(var(--navh) + 28px + env(safe-area-inset-bottom));font-size:.8rem;color:var(--mut);text-align:center}
+footer a{color:var(--acc);display:inline-flex;align-items:center;min-height:44px;padding:0 8px}
+a{color:var(--acc)}
+/* layout */
+.cols2{display:grid;gap:var(--gap);align-items:start;grid-template-columns:minmax(0,1fr)}
+.cols2>*{min-width:0}
+.cols2>.card,.cols2>section{margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:0 0 var(--gap)}
+.card h2{margin:0 0 10px;font-size:1.05rem}
+.card.warn{background:var(--warn2);border-color:var(--warn)}
+.note{background:var(--warn2);border:1px solid var(--warn);border-radius:12px;padding:10px 12px;margin-top:12px;font-size:.92rem}
+.note div+div{margin-top:4px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--mut);min-width:0}
+.fld select,.fld input{color:var(--ink);font-size:1rem;width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--card);cursor:pointer;font-size:.92rem;color:var(--ink);min-height:44px}
+.chip input{accent-color:var(--acc);width:20px;height:20px;margin:0;flex:none}
+.chip:has(input:checked){background:var(--acc2);border-color:var(--acc)}
+.chip:has(input:focus-visible){outline:3px solid var(--c3);outline-offset:2px}
+.mut{color:var(--mut)}
+.hero{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:var(--acc2)}
+.big{font-size:2.6rem;font-weight:700;line-height:1;color:var(--acc)}
+.big small{font-size:1rem;font-weight:500;margin-left:6px;color:var(--mut)}
+.metrics{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}
+.metric{border:1px solid var(--line);border-radius:12px;padding:10px;min-width:0}
+.metric b{display:block;font-size:1.25rem}
+.metric span{font-size:.8rem;color:var(--mut)}
+.stack{display:flex;height:16px;border-radius:8px;overflow:hidden;margin:8px 0}
+.stack i{display:block;height:100%}
+.legend{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:.9rem}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;background:var(--cc)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.78rem;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.tag{display:inline-block;font-size:.72rem;padding:1px 8px;border-radius:999px;background:var(--warn2);color:var(--warn);border:1px solid var(--warn);margin-left:6px;vertical-align:middle}
+ul.tips{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+ul.tips li{display:flex;gap:12px;padding:10px;border:1px solid var(--line);border-radius:12px;min-width:0}
+.ti{flex:none;width:34px;height:34px;border-radius:50%;background:var(--acc2);display:grid;place-items:center;font-size:1.1rem}
+ul.tips p{margin:0 0 6px}
+.src{font-size:.78rem;border:1px solid var(--line);border-radius:999px;padding:4px 11px;color:var(--acc);text-decoration:none;background:var(--card);display:inline-flex;align-items:center;min-height:30px}
+.days{display:flex;gap:6px;overflow-x:auto;margin-bottom:var(--gap);padding-bottom:2px;scroll-snap-type:x proximity}
+.days button{flex:1 0 auto;scroll-snap-align:start;min-width:52px}
+.days button.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.day:not(.on){display:none}
+.meals{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));margin-bottom:var(--gap)}
+.meal{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card);min-width:0}
+.meal h3{margin:0 0 4px;font-size:.98rem;display:flex;justify-content:space-between;gap:8px}
+.meal ul{margin:4px 0;padding-left:18px}
+.macs{font-size:.8rem;color:var(--mut)}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:6px}
+.bar i.over{background:var(--c2)}
+.prow{display:grid;grid-template-columns:90px 1fr 130px;gap:8px;align-items:center;margin:8px 0;font-size:.9rem}
+.prow>:last-child{text-align:right}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{min-width:0}
+.row.sb{justify-content:space-between}
+.fl{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.fl>div{min-width:0}
+.fl small{color:var(--mut);display:block}
+.fl button{flex:none;min-width:44px;padding:8px}
+#flist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));column-gap:24px}
+.x{border:none;background:none;color:var(--bad);font-size:1.3rem;padding:2px 10px}
+.wlist{display:flex;align-items:center;gap:14px}
+dialog{border:1px solid var(--line);border-radius:var(--r);background:var(--card);color:var(--ink);padding:0;width:min(560px,94vw);max-width:none;max-height:88vh;overflow:auto}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.dbody{padding:18px}
+#toast{position:fixed;left:50%;bottom:calc(var(--navh) + 14px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;max-width:92vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.sc{border-top:1px solid var(--line);padding:12px 0}
+.sc:first-of-type{border-top:none}
+.sc a{display:inline-flex;align-items:center;min-height:36px}
+.rt td:first-child{white-space:nowrap}
+@media(max-width:639px){
+  .rt thead{display:none}
+  .rt tr{display:block;padding:8px 0;border-bottom:1px solid var(--line)}
+  .rt td{display:block;border:none;padding:2px 0;white-space:normal!important}
+  .prow{grid-template-columns:1fr auto;gap:4px 8px}
+  .prow>:nth-child(2){grid-column:1/-1;grid-row:2}
+  .prow>:nth-child(3){grid-column:2;grid-row:1}
+  .big{font-size:2.2rem}
+  dialog{margin:auto auto 0;width:100%;border-radius:18px 18px 0 0;padding-bottom:env(safe-area-inset-bottom)}
+}
+@media(min-width:700px){
+  :root{--gap:16px}
+  #sub{display:block}
+  .brand svg{width:42px;height:42px}
+  h1{font-size:1.35rem}
+  nav#tabs{position:static;display:flex;gap:6px;border:0;background:none;padding:0 0 10px;overflow-x:auto}
+  nav#tabs button{flex-direction:row;min-height:42px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);padding:6px 16px;font-size:.95rem;gap:8px;white-space:nowrap;flex:none}
+  nav#tabs button.on{background:var(--acc);color:var(--onacc);border-color:var(--acc);box-shadow:none;font-weight:600}
+  nav#tabs svg{width:18px;height:18px}
+  nav#tabs button span{overflow:visible}
+  main{padding:20px 0 32px}
+  footer{padding-bottom:40px}
+  .card{padding:20px}
+  #toast{bottom:24px}
+}
+@media(min-width:760px){
+  .cols2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cols2>.span2{grid-column:1/-1}
+}
+@media(min-width:1000px){
+  ul.tips{grid-template-columns:1fr 1fr}
+  .big{font-size:3rem}
+}
+@media(max-height:480px) and (orientation:landscape){
+  :root{--navh:50px}
+  nav#tabs button{flex-direction:row;gap:6px;font-size:.72rem}
+  nav#tabs svg{width:18px;height:18px}
+}
+@media print{
+  header.top,nav,footer,.noprint,dialog,#toast{display:none!important}
+  body{background:#fff;color:#000}
+  .card,.meal{border-color:#999;break-inside:avoid}
+  .day{display:block!important;break-after:page}
+  .cols2{display:block}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap hrow">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="var(--acc2)" stroke="var(--acc)" stroke-width="2"/><circle cx="20" cy="20" r="11" fill="var(--card)" stroke="var(--acc)" stroke-width="1.5"/><path d="M20 20 L20 9 A11 11 0 0 1 29.5 25.5Z" fill="var(--c2)"/><path d="M20 20 L29.5 25.5 A11 11 0 0 1 10.5 25.5Z" fill="var(--c1)"/><path d="M20 20 L10.5 25.5 A11 11 0 0 1 20 9Z" fill="var(--c3)"/></svg>
+      <div><h1>FARFURIA</h1><p id="sub"></p></div>
+    </div>
+    <div class="tools"><select id="lang"></select><button id="theme" type="button"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button></div>
+  </div>
+  <div class="wrap"><nav id="tabs" aria-label="FARFURIA"></nav></div>
+</header>
+<main class="wrap" id="view"></main>
+<footer class="wrap" id="foot"></footer>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<noscript><p style="padding:16px">JavaScript is required.</p></noscript>
+
+<script>
+(function(){
+'use strict';
+/* ---------- utilities ---------- */
+var VERSION='1.0',VDATE='2026-11-06';
+var LANGS=['ro','en','fr','it','es','pt','de','hu'];
+var LN=['Română','English','Français','Italiano','Español','Português','Deutsch','Magyar'];
+var mem={};
+var store={
+  get:function(k,d){
+    if(Object.prototype.hasOwnProperty.call(mem,k))return mem[k];
+    var v=null;try{v=localStorage.getItem('farfuria.'+k)}catch(e){}
+    if(v!==null){try{return JSON.parse(v)}catch(e){}}
+    return d;
+  },
+  set:function(k,v){mem[k]=v;try{localStorage.setItem('farfuria.'+k,JSON.stringify(v))}catch(e){}}
+};
+var $=function(s,r){return (r||document).querySelector(s)};
+var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var clamp=function(x,a,b){return Math.max(a,Math.min(b,x))};
+function intIn(v,arr,d){if(typeof v==='string'&&v.trim()!=='')v=Number(v);else if(typeof v!=='number')return d;return arr.indexOf(v)>=0?v:d}
+var LI=intIn(store.get('lang',null),[0,1,2,3,4,5,6,7],-1);
+if(LI<0){var nl=(navigator.language||'en').slice(0,2).toLowerCase();LI=LANGS.indexOf(nl);if(LI<0)LI=1}
+var fmt=function(n,d){d=d||0;n=Number(n);if(!isFinite(n))return '–';try{return n.toLocaleString(LANGS[LI],{minimumFractionDigits:d,maximumFractionDigits:d})}catch(e){return n.toFixed(d)}};
+
+/* ---------- translations: ro en fr it es pt de hu ---------- */
+var S={};
+function A(k){S[k]=Array.prototype.slice.call(arguments,1)}
+function t(k){var v=S[k];if(!v)return k;var s=v[LI]||v[1]||k;for(var i=1;i<arguments.length;i++)s=s.split('{'+(i-1)+'}').join(arguments[i]);return s}
+
+A('sub',"Dieteticianul tău digital: ținte personalizate, plan de mese și recomandări din ghiduri profesionale","Your digital dietitian: personalised targets, meal plan and recommendations from professional guidelines","Votre diététicien numérique : objectifs personnalisés, plan de repas et recommandations issues de guides professionnels","Il tuo dietista digitale: obiettivi personalizzati, piano pasti e raccomandazioni da linee guida professionali","Tu dietista digital: objetivos personalizados, plan de comidas y recomendaciones de guías profesionales","O seu dietista digital: metas personalizadas, plano de refeições e recomendações de guias profissionais","Dein digitaler Ernährungsberater: persönliche Ziele, Speiseplan und Empfehlungen aus Fachleitlinien","Digitális dietetikusod: személyre szabott célok, étrend és szakmai irányelvek ajánlásai");
+A('t_profile',"Profil","Profile","Profil","Profilo","Perfil","Perfil","Profil","Profil");
+A('t_report',"Raport","Report","Bilan","Rapporto","Informe","Relatório","Bericht","Jelentés");
+A('t_log',"Jurnal","Diary","Journal","Diario","Diario","Diário","Tagebuch","Napló");
+A('t_src',"Surse","Sources","Sources","Fonti","Fuentes","Fontes","Quellen","Források");
+A('p_basic',"Date de bază","Basics","Données de base","Dati di base","Datos básicos","Dados básicos","Grunddaten","Alapadatok");
+A('sex',"Sex","Sex","Sexe","Sesso","Sexo","Sexo","Geschlecht","Nem");
+A('male',"Masculin","Male","Homme","Maschio","Hombre","Homem","Männlich","Férfi");
+A('female',"Feminin","Female","Femme","Femmina","Mujer","Mulher","Weiblich","Nő");
+A('age',"Vârsta (ani)","Age (years)","Âge (ans)","Età (anni)","Edad (años)","Idade (anos)","Alter (Jahre)","Életkor (év)");
+A('height',"Înălțime (cm)","Height (cm)","Taille (cm)","Altezza (cm)","Altura (cm)","Altura (cm)","Größe (cm)","Magasság (cm)");
+A('weight',"Greutate (kg)","Weight (kg)","Poids (kg)","Peso (kg)","Peso (kg)","Peso (kg)","Gewicht (kg)","Testsúly (kg)");
+A('tweight',"Greutate țintă (kg, opțional)","Target weight (kg, optional)","Poids cible (kg, facultatif)","Peso obiettivo (kg, facoltativo)","Peso objetivo (kg, opcional)","Peso-alvo (kg, opcional)","Zielgewicht (kg, optional)","Célsúly (kg, opcionális)");
+A('waist',"Talie (cm, opțional)","Waist (cm, optional)","Tour de taille (cm, facultatif)","Vita (cm, facoltativo)","Cintura (cm, opcional)","Cintura (cm, opcional)","Taillenumfang (cm, optional)","Derékbőség (cm, opcionális)");
+A('p_life',"Stil de viață și obiectiv","Lifestyle and goal","Mode de vie et objectif","Stile di vita e obiettivo","Estilo de vida y objetivo","Estilo de vida e objetivo","Lebensstil und Ziel","Életmód és cél");
+A('activity',"Nivel de activitate","Activity level","Niveau d’activité","Livello di attività","Nivel de actividad","Nível de atividade","Aktivitätsniveau","Aktivitási szint");
+A('a1',"Sedentar (birou, puțin sport)","Sedentary (desk job, little exercise)","Sédentaire (bureau, peu de sport)","Sedentario (ufficio, poco sport)","Sedentario (oficina, poco ejercicio)","Sedentário (escritório, pouco exercício)","Sitzend (Büro, wenig Sport)","Ülő munka, kevés mozgás");
+A('a2',"Ușor activ (1–3 zile/săpt.)","Lightly active (1–3 days/week)","Légèrement actif (1–3 j/sem.)","Leggermente attivo (1–3 giorni/sett.)","Ligeramente activo (1–3 días/sem.)","Ligeiramente ativo (1–3 dias/sem.)","Leicht aktiv (1–3 Tage/Woche)","Enyhén aktív (heti 1–3 nap)");
+A('a3',"Moderat activ (3–5 zile/săpt.)","Moderately active (3–5 days/week)","Modérément actif (3–5 j/sem.)","Moderatamente attivo (3–5 giorni/sett.)","Moderadamente activo (3–5 días/sem.)","Moderadamente ativo (3–5 dias/sem.)","Mäßig aktiv (3–5 Tage/Woche)","Mérsékelten aktív (heti 3–5 nap)");
+A('a4',"Foarte activ (6–7 zile/săpt.)","Very active (6–7 days/week)","Très actif (6–7 j/sem.)","Molto attivo (6–7 giorni/sett.)","Muy activo (6–7 días/sem.)","Muito ativo (6–7 dias/sem.)","Sehr aktiv (6–7 Tage/Woche)","Nagyon aktív (heti 6–7 nap)");
+A('a5',"Extrem de activ (efort fizic intens)","Extremely active (hard physical work/training)","Extrêmement actif (travail ou entraînement intense)","Estremamente attivo (lavoro/allenamento intenso)","Extremadamente activo (trabajo/entrenamiento intenso)","Extremamente ativo (trabalho/treino intenso)","Extrem aktiv (harte Arbeit/Training)","Rendkívül aktív (kemény fizikai munka/edzés)");
+A('goal',"Obiectiv","Goal","Objectif","Obiettivo","Objetivo","Objetivo","Ziel","Cél");
+A('g_lose',"Slăbire graduală","Gradual weight loss","Perte de poids progressive","Perdita di peso graduale","Pérdida de peso gradual","Perda de peso gradual","Schrittweise abnehmen","Fokozatos fogyás");
+A('g_maint',"Menținere","Maintain weight","Maintien du poids","Mantenimento","Mantener el peso","Manutenção","Gewicht halten","Súlytartás");
+A('g_gain',"Creștere în greutate / masă musculară","Gain weight / muscle","Prise de poids / de muscle","Aumento di peso / massa muscolare","Aumento de peso / músculo","Ganho de peso / massa muscular","Zunehmen / Muskelaufbau","Súlygyarapodás / izomépítés");
+A('pace',"Ritm","Pace","Rythme","Ritmo","Ritmo","Ritmo","Tempo","Ütem");
+A('pace1',"Lent (−10%)","Slow (−10%)","Lent (−10 %)","Lento (−10%)","Lento (−10 %)","Lento (−10%)","Langsam (−10 %)","Lassú (−10%)");
+A('pace2',"Moderat (−15%)","Moderate (−15%)","Modéré (−15 %)","Moderato (−15%)","Moderado (−15 %)","Moderado (−15%)","Moderat (−15 %)","Közepes (−15%)");
+A('pace3',"Rapid (−20%)","Fast (−20%)","Rapide (−20 %)","Veloce (−20%)","Rápido (−20 %)","Rápido (−20%)","Schnell (−20 %)","Gyors (−20%)");
+A('p_food',"Alimentație și restricții","Diet and restrictions","Alimentation et restrictions","Alimentazione e restrizioni","Alimentación y restricciones","Alimentação e restrições","Ernährung und Einschränkungen","Étrend és korlátozások");
+A('dtype',"Tipul de alimentație","Eating pattern","Régime alimentaire","Regime alimentare","Tipo de alimentación","Tipo de alimentação","Ernährungsform","Étkezési forma");
+A('d_omni',"Omnivor","Omnivore","Omnivore","Onnivoro","Omnívoro","Omnívoro","Mischkost","Mindenevő");
+A('d_pesc',"Pescetarian","Pescatarian","Pescétarien","Pescetariano","Pescetariano","Pescetariano","Pescetarisch","Pescetariánus");
+A('d_veg',"Vegetarian (lactate, ouă)","Vegetarian (dairy, eggs)","Végétarien (laitages, œufs)","Vegetariano (latticini, uova)","Vegetariano (lácteos, huevos)","Vegetariano (laticínios, ovos)","Vegetarisch (Milch, Eier)","Vegetáriánus (tej, tojás)");
+A('d_vegan',"Vegan","Vegan","Végétalien","Vegano","Vegano","Vegano","Vegan","Vegán");
+A('allerg',"Alergii / intoleranțe","Allergies / intolerances","Allergies / intolérances","Allergie / intolleranze","Alergias / intolerancias","Alergias / intolerâncias","Allergien / Unverträglichkeiten","Allergiák / intoleranciák");
+A('al_gl',"Gluten","Gluten","Gluten","Glutine","Gluten","Glúten","Gluten","Glutén");
+A('al_la',"Lactate / lactoză","Dairy / lactose","Produits laitiers / lactose","Latticini / lattosio","Lácteos / lactosa","Laticínios / lactose","Milch / Laktose","Tejtermék / laktóz");
+A('al_nu',"Nuci / arahide","Nuts / peanuts","Fruits à coque / arachides","Frutta a guscio / arachidi","Frutos secos / cacahuetes","Frutos secos / amendoins","Nüsse / Erdnüsse","Diófélék / mogyoró");
+A('al_eg',"Ouă","Eggs","Œufs","Uova","Huevo","Ovos","Eier","Tojás");
+A('al_fi',"Pește","Fish","Poisson","Pesce","Pescado","Peixe","Fisch","Hal");
+A('al_so',"Soia","Soy","Soja","Soia","Soja","Soja","Soja","Szója");
+A('nopork',"Fără carne de porc","No pork","Sans porc","Senza maiale","Sin cerdo","Sem porco","Ohne Schweinefleisch","Sertéshús nélkül");
+A('meals',"Mese pe zi","Meals per day","Repas par jour","Pasti al giorno","Comidas al día","Refeições por dia","Mahlzeiten pro Tag","Étkezések naponta");
+A('p_health',"Sănătate","Health","Santé","Salute","Salud","Saúde","Gesundheit","Egészség");
+A('c_dm2',"Diabet tip 2 / prediabet","Type 2 diabetes / prediabetes","Diabète de type 2 / prédiabète","Diabete di tipo 2 / prediabete","Diabetes tipo 2 / prediabetes","Diabetes tipo 2 / pré-diabetes","Typ-2-Diabetes / Prädiabetes","2-es típusú cukorbetegség / prediabétesz");
+A('c_htn',"Hipertensiune","High blood pressure","Hypertension","Ipertensione","Hipertensión","Hipertensão","Bluthochdruck","Magas vérnyomás");
+A('c_chol',"Colesterol / trigliceride crescute","High cholesterol / triglycerides","Cholestérol / triglycérides élevés","Colesterolo / trigliceridi alti","Colesterol / triglicéridos altos","Colesterol / triglicéridos elevados","Erhöhtes Cholesterin / Triglyzeride","Magas koleszterin / trigliceridszint");
+A('c_preg',"Sarcină sau alăptare","Pregnancy or breastfeeding","Grossesse ou allaitement","Gravidanza o allattamento","Embarazo o lactancia","Gravidez ou amamentação","Schwangerschaft oder Stillzeit","Terhesség vagy szoptatás");
+A('c_ckd',"Boală renală cronică","Chronic kidney disease","Maladie rénale chronique","Malattia renale cronica","Enfermedad renal crónica","Doença renal crónica","Chronische Nierenerkrankung","Krónikus vesebetegség");
+A('c_ed',"Istoric de tulburări alimentare","History of an eating disorder","Antécédents de trouble alimentaire","Storia di disturbi alimentari","Antecedentes de trastorno alimentario","Historial de perturbação alimentar","Essstörung in der Vorgeschichte","Evészavar a kórtörténetben");
+A('gen',"Vezi raportul meu","See my report","Voir mon bilan","Vedi il mio rapporto","Ver mi informe","Ver o meu relatório","Meinen Bericht ansehen","Jelentésem megtekintése");
+A('autosave',"Se salvează automat, doar pe acest dispozitiv.","Saved automatically, on this device only.","Enregistré automatiquement, sur cet appareil uniquement.","Salvato automaticamente, solo su questo dispositivo.","Se guarda automáticamente, solo en este dispositivo.","Guardado automaticamente, apenas neste dispositivo.","Automatisch gespeichert, nur auf diesem Gerät.","Automatikusan mentve, csak ezen az eszközön.");
+A('fill',"Completează profilul pentru a vedea raportul.","Fill in your profile to see the report.","Remplissez votre profil pour voir le bilan.","Compila il profilo per vedere il rapporto.","Completa tu perfil para ver el informe.","Preencha o perfil para ver o relatório.","Fülle dein Profil aus, um den Bericht zu sehen.","Töltsd ki a profilt a jelentés megtekintéséhez.");
+A('lock_minor',"Aplicația este pentru adulți (18+). La copii și adolescenți, necesarul se stabilește de un medic pediatru sau dietetician, după curbele de creștere.","This app is for adults (18+). For children and teenagers, needs must be set by a paediatrician or dietitian using growth charts.","Cette application est destinée aux adultes (18+). Pour les enfants et adolescents, les besoins doivent être fixés par un pédiatre ou un diététicien à l’aide des courbes de croissance.","Questa app è per adulti (18+). Per bambini e adolescenti i fabbisogni vanno stabiliti da un pediatra o da un dietista sulla base delle curve di crescita.","Esta aplicación es para adultos (18+). En niños y adolescentes, las necesidades las fija un pediatra o dietista según las curvas de crecimiento.","Esta aplicação destina-se a adultos (18+). Em crianças e adolescentes, as necessidades devem ser definidas por um pediatra ou dietista com base nas curvas de crescimento.","Diese App ist für Erwachsene (18+). Bei Kindern und Jugendlichen legt ein Kinderarzt oder Ernährungsberater den Bedarf anhand von Wachstumskurven fest.","Ez az alkalmazás felnőtteknek (18+) szól. Gyermekeknél és serdülőknél az igényt gyermekorvos vagy dietetikus határozza meg a növekedési görbék alapján.");
+A('lock_ed',"Pentru siguranța ta, aplicația nu afișează ținte calorice, planuri de mese sau jurnal de calorii. Un medic, un dietetician clinician sau un psiholog specializat te poate sprijini cu un plan potrivit.","For your safety, the app does not show calorie targets, meal plans or a calorie diary. A doctor, a clinical dietitian or a specialised psychologist can support you with a suitable plan.","Pour votre sécurité, l’application n’affiche ni objectifs caloriques, ni plans de repas, ni journal calorique. Un médecin, un diététicien clinicien ou un psychologue spécialisé peut vous accompagner avec un plan adapté.","Per la tua sicurezza l’app non mostra obiettivi calorici, piani pasti né diario calorico. Un medico, un dietista clinico o uno psicologo specializzato può aiutarti con un piano adatto.","Por tu seguridad, la aplicación no muestra objetivos calóricos, planes de comidas ni diario calórico. Un médico, un dietista clínico o un psicólogo especializado puede ayudarte con un plan adecuado.","Para sua segurança, a aplicação não mostra metas calóricas, planos de refeições nem diário calórico. Um médico, um dietista clínico ou um psicólogo especializado pode apoiá-lo com um plano adequado.","Zu deiner Sicherheit zeigt die App keine Kalorienziele, Speisepläne oder Kalorientagebücher an. Ärzt:innen, klinische Ernährungsberater:innen oder spezialisierte Psycholog:innen können dich mit einem passenden Plan unterstützen.","A biztonságod érdekében az alkalmazás nem mutat kalóriacélt, étrendet vagy kalórianaplót. Orvos, klinikai dietetikus vagy szakpszichológus megfelelő tervvel segíthet.");
+A('lock_ckd',"În boala renală cronică, proteinele, potasiul, fosforul și lichidele trebuie individualizate. Aplicația nu calculează ținte pentru tine — cere planul unui nefrolog sau dietetician clinician.","In chronic kidney disease, protein, potassium, phosphorus and fluids must be individualised. The app does not calculate targets for you — ask a nephrologist or clinical dietitian for a plan.","Dans la maladie rénale chronique, protéines, potassium, phosphore et liquides doivent être individualisés. L’application ne calcule pas d’objectifs pour vous — demandez un plan à un néphrologue ou à un diététicien clinicien.","Nella malattia renale cronica proteine, potassio, fosforo e liquidi vanno personalizzati. L’app non calcola obiettivi per te: chiedi un piano a un nefrologo o a un dietista clinico.","En la enfermedad renal crónica, las proteínas, el potasio, el fósforo y los líquidos deben individualizarse. La aplicación no calcula objetivos para ti: pide un plan a un nefrólogo o dietista clínico.","Na doença renal crónica, proteínas, potássio, fósforo e líquidos têm de ser individualizados. A aplicação não calcula metas para si — peça um plano a um nefrologista ou dietista clínico.","Bei chronischer Nierenerkrankung müssen Eiweiß, Kalium, Phosphor und Flüssigkeit individuell festgelegt werden. Die App berechnet keine Ziele für dich — frage Nephrolog:in oder klinische Ernährungsberatung nach einem Plan.","Krónikus vesebetegségben a fehérje, kálium, foszfor és folyadék egyénileg határozandó meg. Az alkalmazás nem számol célokat neked — kérj tervet nefrológustól vagy klinikai dietetikustól.");
+A('kcal',"kcal/zi","kcal/day","kcal/jour","kcal/giorno","kcal/día","kcal/dia","kcal/Tag","kcal/nap");
+A('hero_h',"Țintă energetică zilnică (orientativ)","Daily energy target (estimate)","Objectif énergétique quotidien (estimation)","Obiettivo energetico giornaliero (stima)","Objetivo energético diario (estimación)","Meta energética diária (estimativa)","Tägliches Energieziel (Schätzung)","Napi energiacél (becslés)");
+A('bmi',"IMC","BMI","IMC","BMI","IMC","IMC","BMI","BMI");
+A('bmi0',"Subponderal","Underweight","Insuffisance pondérale","Sottopeso","Bajo peso","Baixo peso","Untergewicht","Alulsúlyos");
+A('bmi1',"Greutate normală","Healthy weight","Poids normal","Normopeso","Peso normal","Peso normal","Normalgewicht","Normál testsúly");
+A('bmi2',"Supraponderal","Overweight","Surpoids","Sovrappeso","Sobrepeso","Excesso de peso","Übergewicht","Túlsúlyos");
+A('bmi3',"Obezitate","Obesity","Obésité","Obesità","Obesidad","Obesidade","Adipositas","Elhízás");
+A('hrange',"Interval sănătos de greutate","Healthy weight range","Plage de poids santé","Intervallo di peso salutare","Rango de peso saludable","Intervalo de peso saudável","Gesunder Gewichtsbereich","Egészséges testsúlytartomány");
+A('whtr',"Raport talie/înălțime","Waist-to-height ratio","Rapport taille/hauteur","Rapporto vita/altezza","Relación cintura/altura","Relação cintura/altura","Taille-Größe-Verhältnis","Derék–magasság arány");
+A('whtr_ok',"sub 0,5 – favorabil","below 0.5 – favourable","inférieur à 0,5 – favorable","sotto 0,5 – favorevole","inferior a 0,5 – favorable","abaixo de 0,5 – favorável","unter 0,5 – günstig","0,5 alatt – kedvező");
+A('whtr_hi',"peste 0,5 – risc metabolic mai mare; discută cu medicul","above 0.5 – higher metabolic risk; talk to your doctor","supérieur à 0,5 – risque métabolique accru ; parlez-en à votre médecin","sopra 0,5 – rischio metabolico maggiore; parlane con il medico","superior a 0,5 – mayor riesgo metabólico; consúltalo con tu médico","acima de 0,5 – maior risco metabólico; fale com o seu médico","über 0,5 – erhöhtes Stoffwechselrisiko; sprich mit deinem Arzt","0,5 felett – magasabb anyagcsere-kockázat; beszélj orvosoddal");
+A('bmr',"Metabolism bazal (BMR)","Basal metabolic rate (BMR)","Métabolisme de base (MB)","Metabolismo basale (BMR)","Metabolismo basal (TMB)","Metabolismo basal (TMB)","Grundumsatz (BMR)","Alapanyagcsere (BMR)");
+A('tdee',"Consum zilnic total (TDEE)","Total daily energy expenditure (TDEE)","Dépense énergétique totale (DET)","Dispendio energetico totale (TDEE)","Gasto energético total (GET)","Gasto energético total (GET)","Gesamtenergieumsatz (TDEE)","Teljes napi energiafelhasználás (TDEE)");
+A('weeks',"Estimare: ~{0} săptămâni până la {1} kg","Estimate: ~{0} weeks to reach {1} kg","Estimation : ~{0} semaines pour atteindre {1} kg","Stima: ~{0} settimane per raggiungere {1} kg","Estimación: ~{0} semanas para llegar a {1} kg","Estimativa: ~{0} semanas para chegar a {1} kg","Schätzung: ~{0} Wochen bis {1} kg","Becslés: kb. {0} hét {1} kg eléréséhez");
+A('macros',"Macronutrienți","Macronutrients","Macronutriments","Macronutrienti","Macronutrientes","Macronutrientes","Makronährstoffe","Makrotápanyagok");
+A('protein',"Proteine","Protein","Protéines","Proteine","Proteínas","Proteínas","Eiweiß","Fehérje");
+A('carbs',"Carbohidrați","Carbohydrates","Glucides","Carboidrati","Hidratos de carbono","Hidratos de carbono","Kohlenhydrate","Szénhidrát");
+A('fat',"Grăsimi","Fat","Lipides","Grassi","Grasas","Gorduras","Fett","Zsír");
+A('fiber',"Fibre","Fibre","Fibres","Fibre","Fibra","Fibra","Ballaststoffe","Rost");
+A('limits',"Limite și repere zilnice","Daily limits and benchmarks","Limites et repères quotidiens","Limiti e riferimenti giornalieri","Límites y referencias diarias","Limites e referências diárias","Tägliche Grenzen und Richtwerte","Napi határértékek és irányértékek");
+A('satfat',"Grăsimi saturate (max.)","Saturated fat (max.)","Graisses saturées (max.)","Grassi saturi (max.)","Grasas saturadas (máx.)","Gorduras saturadas (máx.)","Gesättigte Fette (max.)","Telített zsír (max.)");
+A('sugar',"Zahăr liber (max.)","Free sugars (max.)","Sucres libres (max.)","Zuccheri liberi (max.)","Azúcares libres (máx.)","Açúcares livres (máx.)","Freie Zucker (max.)","Szabad cukor (max.)");
+A('salt',"Sare (max.)","Salt (max.)","Sel (max.)","Sale (max.)","Sal (máx.)","Sal (máx.)","Salz (max.)","Só (max.)");
+A('water',"Lichide totale (aprox.)","Total fluids (approx.)","Liquides totaux (env.)","Liquidi totali (circa)","Líquidos totales (aprox.)","Líquidos totais (aprox.)","Gesamtflüssigkeit (ca.)","Összes folyadék (kb.)");
+A('tips_h',"Recomandările dieteticianului","The dietitian’s advice","Les conseils du diététicien","I consigli del dietista","Los consejos del dietista","Os conselhos do dietista","Die Empfehlungen des Ernährungsberaters","A dietetikus tanácsai");
+A('nut_h',"Micronutrienți (valori de referință EFSA)","Micronutrients (EFSA reference values)","Micronutriments (valeurs de référence EFSA)","Micronutrienti (valori di riferimento EFSA)","Micronutrientes (valores de referencia de la EFSA)","Micronutrientes (valores de referência da EFSA)","Mikronährstoffe (EFSA-Referenzwerte)","Mikrotápanyagok (EFSA referenciaértékek)");
+A('prio',"prioritar","priority","prioritaire","prioritario","prioritario","prioritário","vorrangig","kiemelt");
+A('srccol',"Surse alimentare","Food sources","Sources alimentaires","Fonti alimentari","Fuentes alimentarias","Fontes alimentares","Lebensmittelquellen","Élelmiszerforrások");
+A('disc',"Informații educaționale; nu înlocuiesc consultul la medic sau la un dietetician autorizat. Valorile sunt estimări, iar nevoile reale diferă de la o persoană la alta.","Educational information; it does not replace a consultation with a doctor or a registered dietitian. Values are estimates and real needs differ between people.","Informations éducatives ; elles ne remplacent pas la consultation d’un médecin ou d’un diététicien diplômé. Les valeurs sont des estimations et les besoins réels varient d’une personne à l’autre.","Informazioni educative; non sostituiscono la visita di un medico o di un dietista abilitato. I valori sono stime e i fabbisogni reali variano da persona a persona.","Información educativa; no sustituye la consulta con un médico o un dietista colegiado. Los valores son estimaciones y las necesidades reales varían de una persona a otra.","Informação educativa; não substitui a consulta com um médico ou um dietista licenciado. Os valores são estimativas e as necessidades reais variam de pessoa para pessoa.","Informationen zu Bildungszwecken; sie ersetzen nicht die Beratung durch Ärzt:innen oder staatlich anerkannte Ernährungsberater:innen. Die Werte sind Schätzungen, der tatsächliche Bedarf ist individuell.","Oktatási célú információ; nem helyettesíti az orvos vagy képzett dietetikus tanácsát. Az értékek becslések, a tényleges szükséglet egyénenként eltér.");
+A('n_fe',"Fier","Iron","Fer","Ferro","Hierro","Ferro","Eisen","Vas");
+A('n_ca',"Calciu","Calcium","Calcium","Calcio","Calcio","Cálcio","Calcium","Kalcium");
+A('n_d',"Vitamina D","Vitamin D","Vitamine D","Vitamina D","Vitamina D","Vitamina D","Vitamin D","D-vitamin");
+A('n_b12',"Vitamina B12","Vitamin B12","Vitamine B12","Vitamina B12","Vitamina B12","Vitamina B12","Vitamin B12","B12-vitamin");
+A('n_fol',"Folat","Folate","Folates","Folati","Folato","Folato","Folat","Folát");
+A('n_mg',"Magneziu","Magnesium","Magnésium","Magnesio","Magnesio","Magnésio","Magnesium","Magnézium");
+A('n_k',"Potasiu","Potassium","Potassium","Potassio","Potasio","Potássio","Kalium","Kálium");
+A('n_i',"Iod","Iodine","Iode","Iodio","Yodo","Iodo","Jod","Jód");
+A('n_zn',"Zinc","Zinc","Zinc","Zinco","Zinc","Zinco","Zink","Cink");
+A('n_o3',"Omega-3 (EPA+DHA)","Omega-3 (EPA+DHA)","Oméga-3 (EPA+DHA)","Omega-3 (EPA+DHA)","Omega-3 (EPA+DHA)","Ómega-3 (EPA+DHA)","Omega-3 (EPA+DHA)","Omega-3 (EPA+DHA)");
+A('n_c',"Vitamina C","Vitamin C","Vitamine C","Vitamina C","Vitamina C","Vitamina C","Vitamin C","C-vitamin");
+A('nd',"Soare + alimente fortificate; octombrie–martie, verifică nivelul (25-OH D) cu medicul înainte de suplimente.","Sunlight + fortified foods; from October to March check your level (25-OH D) with your doctor before supplements.","Soleil + aliments enrichis ; d’octobre à mars, faites contrôler votre taux (25-OH D) avant tout complément.","Sole + alimenti fortificati; da ottobre a marzo fai controllare il livello (25-OH D) prima di integratori.","Sol + alimentos enriquecidos; de octubre a marzo, controla tu nivel (25-OH D) con tu médico antes de suplementos.","Sol + alimentos fortificados; de outubro a março, verifique o seu nível (25-OH D) com o médico antes de suplementos.","Sonne + angereicherte Lebensmittel; von Oktober bis März den Spiegel (25-OH-D) vor Supplementen ärztlich prüfen lassen.","Napfény + dúsított élelmiszerek; októbertől márciusig kiegészítők előtt ellenőriztesd a szintedet (25-OH D).");
+A('nb12',"Alimentația vegană necesită supliment sau alimente fortificate cu B12.","Vegan diets need a B12 supplement or fortified foods.","Une alimentation végétalienne nécessite un complément de B12 ou des aliments enrichis.","L’alimentazione vegana richiede un integratore di B12 o alimenti fortificati.","Una dieta vegana requiere suplemento de B12 o alimentos enriquecidos.","Uma alimentação vegana requer suplemento de B12 ou alimentos fortificados.","Vegane Ernährung braucht ein B12-Supplement oder angereicherte Lebensmittel.","A vegán étrendhez B12-kiegészítő vagy dúsított élelmiszer kell.");
+A('ni',"Sare iodată (în limita de 5 g/zi).","Iodised salt (within the 5 g/day limit).","Sel iodé (dans la limite de 5 g/jour).","Sale iodato (entro il limite di 5 g/giorno).","Sal yodada (dentro del límite de 5 g/día).","Sal iodado (dentro do limite de 5 g/dia).","Jodsalz (im Rahmen von 5 g/Tag).","Jódozott só (az 5 g/napos határon belül).");
+A('pl_h',"Plan de mese pe 7 zile","7-day meal plan","Plan de repas sur 7 jours","Piano pasti di 7 giorni","Plan de comidas de 7 días","Plano de refeições de 7 dias","7-Tage-Speiseplan","7 napos étrend");
+A('pl_regen',"Alt plan","New plan","Autre plan","Altro piano","Otro plan","Outro plano","Neuer Plan","Új terv");
+A('pl_shop',"Lista de cumpărături","Shopping list","Liste de courses","Lista della spesa","Lista de la compra","Lista de compras","Einkaufsliste","Bevásárlólista");
+A('pl_print',"Tipărește","Print","Imprimer","Stampa","Imprimir","Imprimir","Drucken","Nyomtatás");
+A('m_b',"Mic dejun","Breakfast","Petit-déjeuner","Colazione","Desayuno","Pequeno-almoço","Frühstück","Reggeli");
+A('m_s',"Gustare","Snack","Collation","Spuntino","Merienda","Lanche","Zwischenmahlzeit","Köztes étkezés");
+A('m_l',"Prânz","Lunch","Déjeuner","Pranzo","Comida","Almoço","Mittagessen","Ebéd");
+A('m_d',"Cină","Dinner","Dîner","Cena","Cena","Jantar","Abendessen","Vacsora");
+A('day_tot',"Total zi","Day total","Total du jour","Totale giorno","Total del día","Total do dia","Tagessumme","Napi összesen");
+A('nomeal',"Nu am găsit rețete compatibile cu restricțiile tale pentru această masă.","No recipes compatible with your restrictions were found for this meal.","Aucune recette compatible avec vos restrictions n’a été trouvée pour ce repas.","Nessuna ricetta compatibile con le tue restrizioni per questo pasto.","No hay recetas compatibles con tus restricciones para esta comida.","Não há receitas compatíveis com as suas restrições para esta refeição.","Für diese Mahlzeit gibt es keine zu deinen Einschränkungen passenden Rezepte.","Ehhez az étkezéshez nincs a korlátozásaidnak megfelelő recept.");
+A('cooked',"Cantitățile sunt în greutate gătită / gata de consum; ajustează după foame și sațietate.","Amounts are cooked / ready-to-eat weights; adjust to hunger and fullness.","Les quantités sont des poids cuits / prêts à manger ; ajustez selon la faim et la satiété.","Le quantità sono pesi cotti / pronti al consumo; adatta in base a fame e sazietà.","Las cantidades son pesos cocinados / listos para comer; ajusta según el hambre y la saciedad.","As quantidades são pesos cozinhados / prontos a comer; ajuste conforme a fome e a saciedade.","Mengen sind Gewichte gegart / verzehrfertig; nach Hunger und Sättigung anpassen.","A mennyiségek főtt / fogyasztásra kész tömegek; igazítsd az éhséghez és a teltségérzethez.");
+A('close',"Închide","Close","Fermer","Chiudi","Cerrar","Fechar","Schließen","Bezárás");
+A('addlog',"Adaugă în jurnal","Add to diary","Ajouter au journal","Aggiungi al diario","Añadir al diario","Adicionar ao diário","Zum Tagebuch hinzufügen","Hozzáadás a naplóhoz");
+A('fsearch',"Caută un aliment…","Search a food…","Rechercher un aliment…","Cerca un alimento…","Buscar un alimento…","Pesquisar um alimento…","Lebensmittel suchen…","Étel keresése…");
+A('fall',"Toate","All","Tous","Tutti","Todos","Todos","Alle","Mind");
+A('g_gr',"Cereale și amidon","Grains & starches","Céréales et féculents","Cereali e amidi","Cereales y almidones","Cereais e amidos","Getreide & Stärke","Gabona és keményítő");
+A('g_lg',"Leguminoase și soia","Legumes & soy","Légumineuses et soja","Legumi e soia","Legumbres y soja","Leguminosas e soja","Hülsenfrüchte & Soja","Hüvelyesek és szója");
+A('g_vg',"Legume","Vegetables","Légumes","Verdure","Verduras","Legumes","Gemüse","Zöldségek");
+A('g_fr',"Fructe","Fruit","Fruits","Frutta","Fruta","Fruta","Obst","Gyümölcsök");
+A('g_ns',"Nuci, semințe, uleiuri","Nuts, seeds, oils","Fruits secs, graines, huiles","Frutta secca, semi, oli","Frutos secos, semillas, aceites","Frutos secos, sementes, óleos","Nüsse, Samen, Öle","Magvak, olajok");
+A('g_da',"Lactate și ouă","Dairy & eggs","Produits laitiers et œufs","Latticini e uova","Lácteos y huevos","Laticínios e ovos","Milch & Eier","Tejtermékek és tojás");
+A('g_fs',"Pește","Fish","Poisson","Pesce","Pescado","Peixe","Fisch","Hal");
+A('g_mt',"Carne","Meat","Viande","Carne","Carne","Carne","Fleisch","Hús");
+A('per100',"la 100 g","per 100 g","pour 100 g","per 100 g","por 100 g","por 100 g","pro 100 g","100 g-ra");
+A('grams',"Grame","Grams","Grammes","Grammi","Gramos","Gramas","Gramm","Gramm");
+A('meal',"Masa","Meal","Repas","Pasto","Comida","Refeição","Mahlzeit","Étkezés");
+A('ldate',"Data","Date","Date","Data","Fecha","Data","Datum","Dátum");
+A('ladd',"Adaugă","Add","Ajouter","Aggiungi","Añadir","Adicionar","Hinzufügen","Hozzáadás");
+A('lempty',"Nimic înregistrat încă.","Nothing logged yet.","Rien d’enregistré.","Ancora nulla registrato.","Nada registrado aún.","Nada registado ainda.","Noch nichts erfasst.","Még nincs bejegyzés.");
+A('lprog',"Progres față de țintă","Progress vs target","Progression vs objectif","Progresso rispetto all’obiettivo","Progreso frente al objetivo","Progresso face à meta","Fortschritt gegenüber Ziel","Haladás a célhoz képest");
+A('lwater',"Apă (pahare de 250 ml)","Water (250 ml glasses)","Eau (verres de 250 ml)","Acqua (bicchieri da 250 ml)","Agua (vasos de 250 ml)","Água (copos de 250 ml)","Wasser (Gläser à 250 ml)","Víz (2,5 dl-es poharak)");
+A('lweight',"Greutate","Weight","Poids","Peso","Peso","Peso","Gewicht","Testsúly");
+A('lsave',"Salvează","Save","Enregistrer","Salva","Guardar","Guardar","Speichern","Mentés");
+A('lbackup',"Copie de siguranță","Backup","Sauvegarde","Copia di sicurezza","Copia de seguridad","Cópia de segurança","Datensicherung","Biztonsági mentés");
+A('lexport',"Exportă","Export","Exporter","Esporta","Exportar","Exportar","Exportieren","Exportálás");
+A('limport',"Importă","Import","Importer","Importa","Importar","Importar","Importieren","Importálás");
+A('llocal',"Datele rămân doar în acest browser (offline, fără conturi, fără urmărire).","Data stays only in this browser (offline, no accounts, no tracking).","Les données restent uniquement dans ce navigateur (hors ligne, sans compte, sans suivi).","I dati restano solo in questo browser (offline, nessun account, nessun tracciamento).","Los datos permanecen solo en este navegador (sin conexión, sin cuentas, sin rastreo).","Os dados ficam apenas neste navegador (offline, sem contas, sem rastreio).","Die Daten bleiben nur in diesem Browser (offline, ohne Konten, ohne Tracking).","Az adatok csak ebben a böngészőben maradnak (offline, fiók és követés nélkül).");
+A('s_intro',"Țintele și sfaturile sintetizează ghiduri ale unor organizații profesionale și științifice (nu sunt citate individuale ale unor medici). Verifică întotdeauna sursa originală.","Targets and advice synthesise guidelines from professional and scientific organisations (not quotes from individual clinicians). Always check the original source.","Les objectifs et conseils synthétisent les recommandations d’organisations professionnelles et scientifiques (pas des citations de praticiens). Vérifiez toujours la source originale.","Obiettivi e consigli sintetizzano le linee guida di organizzazioni professionali e scientifiche (non citazioni di singoli clinici). Verifica sempre la fonte originale.","Los objetivos y consejos sintetizan guías de organizaciones profesionales y científicas (no citas de clínicos concretos). Comprueba siempre la fuente original.","As metas e os conselhos sintetizam guias de organizações profissionais e científicas (não são citações de clínicos individuais). Verifique sempre a fonte original.","Ziele und Empfehlungen fassen Leitlinien fachlicher und wissenschaftlicher Organisationen zusammen (keine Zitate einzelner Ärzte). Prüfe stets die Originalquelle.","A célok és tanácsok szakmai és tudományos szervezetek irányelveit összegzik (nem egyes orvosok idézetei). Mindig ellenőrizd az eredeti forrást.");
+A('s_open',"Deschide sursa","Open source","Ouvrir la source","Apri la fonte","Abrir la fuente","Abrir a fonte","Quelle öffnen","Forrás megnyitása");
+A('tip_maint',"Menține ≈{0} kcal/zi; greutatea rămâne stabilă dacă activitatea ta rămâne similară.","Keep to ≈{0} kcal/day; your weight should stay stable if your activity stays similar.","Visez ≈{0} kcal/jour ; votre poids reste stable si votre activité reste similaire.","Mantieni ≈{0} kcal/giorno; il peso resta stabile se l’attività resta simile.","Mantén ≈{0} kcal/día; tu peso seguirá estable si tu actividad se mantiene.","Mantenha ≈{0} kcal/dia; o peso mantém-se estável se a atividade for semelhante.","Bleibe bei ≈{0} kcal/Tag; dein Gewicht bleibt stabil, wenn deine Aktivität ähnlich bleibt.","Tartsd ≈{0} kcal/nap körül; a súlyod stabil marad, ha a mozgásod hasonló.");
+A('tip_gain',"Țintă ≈{0} kcal/zi (surplus ≈10%), cu proteine suficiente și antrenament de forță, pentru ca excesul să devină masă musculară.","Target ≈{0} kcal/day (≈10% surplus) with enough protein and strength training, so the surplus becomes muscle.","Objectif ≈{0} kcal/jour (surplus ≈10 %) avec assez de protéines et de renforcement, pour que le surplus devienne du muscle.","Obiettivo ≈{0} kcal/giorno (surplus ≈10%) con proteine sufficienti e allenamento di forza, perché l’eccesso diventi muscolo.","Objetivo ≈{0} kcal/día (superávit ≈10 %) con suficiente proteína y entrenamiento de fuerza, para que el excedente sea músculo.","Meta ≈{0} kcal/dia (excedente ≈10%) com proteína suficiente e treino de força, para que o excedente se torne músculo.","Ziel ≈{0} kcal/Tag (≈10 % Überschuss) mit ausreichend Eiweiß und Krafttraining, damit der Überschuss zu Muskeln wird.","Cél ≈{0} kcal/nap (≈10% többlet) elegendő fehérjével és erősítéssel, hogy a többlet izommá váljon.");
+A('tip_plate',"Farfuria sănătoasă: jumătate legume și fructe (≥400 g/zi), un sfert cereale integrale, un sfert proteine sănătoase (leguminoase, pește, ouă, carne slabă), ulei vegetal; apă ca băutură de bază.","Healthy plate: half vegetables and fruit (≥400 g/day), a quarter whole grains, a quarter healthy protein (legumes, fish, eggs, lean meat), plant oils; water as your main drink.","Assiette saine : moitié légumes et fruits (≥400 g/jour), un quart de céréales complètes, un quart de protéines saines (légumineuses, poisson, œufs, viande maigre), huiles végétales ; l’eau comme boisson principale.","Piatto sano: metà verdura e frutta (≥400 g/giorno), un quarto cereali integrali, un quarto proteine sane (legumi, pesce, uova, carne magra), oli vegetali; acqua come bevanda principale.","Plato saludable: la mitad verduras y fruta (≥400 g/día), un cuarto cereales integrales, un cuarto proteína saludable (legumbres, pescado, huevos, carne magra), aceites vegetales; agua como bebida principal.","Prato saudável: metade legumes e fruta (≥400 g/dia), um quarto cereais integrais, um quarto proteína saudável (leguminosas, peixe, ovos, carne magra), óleos vegetais; água como bebida principal.","Gesunder Teller: halb Gemüse und Obst (≥400 g/Tag), ein Viertel Vollkorn, ein Viertel gesundes Eiweiß (Hülsenfrüchte, Fisch, Eier, mageres Fleisch), Pflanzenöle; Wasser als Hauptgetränk.","Egészséges tányér: fele zöldség és gyümölcs (napi ≥400 g), negyede teljes kiőrlésű gabona, negyede egészséges fehérje (hüvelyesek, hal, tojás, sovány hús), növényi olajok; fő italod a víz.");
+A('tip_protein',"Proteine: ≈{0} g/zi ({1} g/kg), împărțite în 3–4 mese (20–30 g/masă) pentru sinteză musculară mai bună.","Protein: ≈{0} g/day ({1} g/kg), spread over 3–4 meals (20–30 g each) for better muscle protein synthesis.","Protéines : ≈{0} g/jour ({1} g/kg), réparties sur 3–4 repas (20–30 g chacun) pour une meilleure synthèse musculaire.","Proteine: ≈{0} g/giorno ({1} g/kg), distribuite in 3–4 pasti (20–30 g ciascuno) per una migliore sintesi muscolare.","Proteínas: ≈{0} g/día ({1} g/kg), repartidas en 3–4 comidas (20–30 g cada una) para una mejor síntesis muscular.","Proteínas: ≈{0} g/dia ({1} g/kg), repartidas por 3–4 refeições (20–30 g cada) para melhor síntese muscular.","Eiweiß: ≈{0} g/Tag ({1} g/kg), auf 3–4 Mahlzeiten verteilt (je 20–30 g) für eine bessere Muskelproteinsynthese.","Fehérje: ≈{0} g/nap ({1} g/ttkg), 3–4 étkezésre elosztva (étkezésenként 20–30 g) a jobb izomfehérje-szintézisért.");
+A('tip_fiber',"Fibre: ≥{0} g/zi din cereale integrale, leguminoase, legume, fructe și semințe; crește treptat și bea apă suficientă.","Fibre: ≥{0} g/day from whole grains, legumes, vegetables, fruit and seeds; increase gradually and drink enough water.","Fibres : ≥{0} g/jour issues de céréales complètes, légumineuses, légumes, fruits et graines ; augmentez progressivement et buvez suffisamment.","Fibre: ≥{0} g/giorno da cereali integrali, legumi, verdura, frutta e semi; aumenta gradualmente e bevi abbastanza.","Fibra: ≥{0} g/día de cereales integrales, legumbres, verduras, fruta y semillas; auméntala poco a poco y bebe suficiente agua.","Fibra: ≥{0} g/dia de cereais integrais, leguminosas, legumes, fruta e sementes; aumente gradualmente e beba água suficiente.","Ballaststoffe: ≥{0} g/Tag aus Vollkorn, Hülsenfrüchten, Gemüse, Obst und Samen; langsam steigern und genug trinken.","Rost: napi ≥{0} g teljes kiőrlésű gabonából, hüvelyesekből, zöldségből, gyümölcsből és magvakból; fokozatosan növeld, és igyál eleget.");
+A('tip_sugar',"Zahăr liber: sub {0} g/zi (10% din energie), ideal sub {1} g; evită sucurile și băuturile îndulcite, limitează dulciurile.","Free sugars: under {0} g/day (10% of energy), ideally under {1} g; skip juices and sweetened drinks, limit sweets.","Sucres libres : moins de {0} g/jour (10 % de l’énergie), idéalement moins de {1} g ; évitez jus et boissons sucrées, limitez les sucreries.","Zuccheri liberi: meno di {0} g/giorno (10% dell’energia), idealmente meno di {1} g; evita succhi e bevande zuccherate, limita i dolci.","Azúcares libres: menos de {0} g/día (10 % de la energía), idealmente menos de {1} g; evita zumos y bebidas azucaradas, limita los dulces.","Açúcares livres: menos de {0} g/dia (10% da energia), idealmente menos de {1} g; evite sumos e bebidas açucaradas, limite os doces.","Freie Zucker: unter {0} g/Tag (10 % der Energie), idealerweise unter {1} g; Säfte und Süßgetränke meiden, Süßes begrenzen.","Szabad cukor: napi {0} g alatt (az energia 10%-a), ideálisan {1} g alatt; kerüld a gyümölcsleveket és üdítőket, korlátozd az édességet.");
+A('tip_salt',"Sare: sub 5 g/zi (≈1 linguriță), inclusiv cea din pâine, brânzeturi, mezeluri și conserve; gustă înainte să sărezi, folosește ierburi și lămâie.","Salt: under 5 g/day (≈1 teaspoon) including the salt in bread, cheese, cured meats and canned food; taste before salting, use herbs and lemon.","Sel : moins de 5 g/jour (≈1 cuillère à café), y compris celui du pain, fromages, charcuteries et conserves ; goûtez avant de saler, utilisez herbes et citron.","Sale: meno di 5 g/giorno (≈1 cucchiaino), compreso quello di pane, formaggi, salumi e conserve; assaggia prima di salare, usa erbe e limone.","Sal: menos de 5 g/día (≈1 cucharadita), incluida la del pan, quesos, embutidos y conservas; prueba antes de salar, usa hierbas y limón.","Sal: menos de 5 g/dia (≈1 colher de chá), incluindo a do pão, queijos, enchidos e conservas; prove antes de salgar, use ervas e limão.","Salz: unter 5 g/Tag (≈1 Teelöffel) inklusive Brot, Käse, Wurst und Konserven; erst probieren, mit Kräutern und Zitrone würzen.","Só: napi 5 g alatt (≈1 teáskanál), a kenyér, sajt, felvágottak és konzervek sójával együtt; sózás előtt kóstold meg, használj fűszernövényeket és citromot.");
+A('tip_fat',"Grăsimi ≈{1}% din energie, majoritar nesaturate (ulei de măsline, nuci, semințe, pește); grăsimi saturate sub {0} g/zi; evită grăsimile trans.","Fat ≈{1}% of energy, mostly unsaturated (olive oil, nuts, seeds, fish); saturated fat under {0} g/day; avoid trans fats.","Lipides ≈{1} % de l’énergie, surtout insaturés (huile d’olive, noix, graines, poisson) ; graisses saturées sous {0} g/jour ; évitez les graisses trans.","Grassi ≈{1}% dell’energia, soprattutto insaturi (olio d’oliva, frutta secca, semi, pesce); grassi saturi sotto {0} g/giorno; evita i grassi trans.","Grasas ≈{1} % de la energía, sobre todo insaturadas (aceite de oliva, frutos secos, semillas, pescado); saturadas por debajo de {0} g/día; evita las grasas trans.","Gorduras ≈{1}% da energia, sobretudo insaturadas (azeite, frutos secos, sementes, peixe); saturadas abaixo de {0} g/dia; evite gorduras trans.","Fett ≈{1} % der Energie, überwiegend ungesättigt (Olivenöl, Nüsse, Samen, Fisch); gesättigte Fette unter {0} g/Tag; Transfette meiden.","Zsír ≈{1}% az energiából, főleg telítetlen (olívaolaj, magvak, hal); telített zsír {0} g/nap alatt; kerüld a transzzsírokat.");
+A('tip_animal',"Pește de 2 ori/săpt. (unul gras: somon, sardine); carne roșie cel mult ≈350–500 g gătită/săpt., fără mezeluri procesate; leguminoase de 3–4 ori/săpt.","Fish twice a week (one oily: salmon, sardines); red meat at most ≈350–500 g cooked per week, no processed meats; legumes 3–4 times a week.","Poisson 2 fois par semaine (dont un gras : saumon, sardines) ; viande rouge au plus ≈350–500 g cuits par semaine, pas de charcuteries ; légumineuses 3–4 fois par semaine.","Pesce 2 volte a settimana (uno grasso: salmone, sardine); carne rossa al massimo ≈350–500 g cotti a settimana, niente salumi; legumi 3–4 volte a settimana.","Pescado 2 veces por semana (uno azul: salmón, sardinas); carne roja como máximo ≈350–500 g cocinados por semana, sin procesados cárnicos; legumbres 3–4 veces por semana.","Peixe 2 vezes por semana (um gordo: salmão, sardinhas); carne vermelha no máximo ≈350–500 g cozinhados por semana, sem processados; leguminosas 3–4 vezes por semana.","Fisch 2-mal pro Woche (einmal fettreich: Lachs, Sardinen); rotes Fleisch höchstens ≈350–500 g gegart pro Woche, keine verarbeiteten Fleischwaren; Hülsenfrüchte 3–4-mal pro Woche.","Hal hetente kétszer (egyszer zsíros: lazac, szardínia); vörös hús legfeljebb ≈350–500 g főve hetente, feldolgozott húskészítmény nélkül; hüvelyesek hetente 3–4-szer.");
+A('tip_process',"Alege alimente puțin procesate, gătite acasă; limitează produsele ultraprocesate (snacksuri, patiserie, cârnați, băuturi dulci).","Choose minimally processed, home-cooked food; limit ultra-processed products (snacks, pastries, sausages, sweet drinks).","Privilégiez des aliments peu transformés, cuisinés maison ; limitez les produits ultra-transformés (snacks, viennoiseries, saucisses, boissons sucrées).","Scegli cibi poco processati, cucinati in casa; limita i prodotti ultraprocessati (snack, dolci confezionati, salsicce, bevande zuccherate).","Elige alimentos poco procesados y cocinados en casa; limita los ultraprocesados (snacks, bollería, salchichas, bebidas azucaradas).","Escolha alimentos pouco processados e cozinhados em casa; limite os ultraprocessados (snacks, pastelaria, salsichas, bebidas açucaradas).","Bevorzuge wenig verarbeitete, selbst gekochte Speisen; ultra-verarbeitete Produkte (Snacks, Gebäck, Würstchen, Süßgetränke) begrenzen.","Válassz kevéssé feldolgozott, házilag főzött ételeket; korlátozd az ultrafeldolgozott termékeket (snackek, péksütemények, kolbászok, üdítők).");
+A('tip_water',"Hidratare: ≈{0} L lichide totale/zi (inclusiv din alimente), mai mult la căldură sau efort. Alcool: cât mai puțin; niciun nivel nu este complet sigur.","Hydration: ≈{0} L total fluids/day (including food), more in heat or exercise. Alcohol: as little as possible; no level is completely safe.","Hydratation : ≈{0} L de liquides totaux/jour (aliments inclus), plus par temps chaud ou à l’effort. Alcool : le moins possible ; aucun niveau n’est totalement sans risque.","Idratazione: ≈{0} L di liquidi totali/giorno (cibo incluso), di più con il caldo o l’attività. Alcol: il meno possibile; nessun livello è del tutto sicuro.","Hidratación: ≈{0} L de líquidos totales/día (incluidos los alimentos), más con calor o ejercicio. Alcohol: lo mínimo posible; ningún nivel es del todo seguro.","Hidratação: ≈{0} L de líquidos totais/dia (incluindo alimentos), mais com calor ou exercício. Álcool: o mínimo possível; nenhum nível é totalmente seguro.","Flüssigkeit: ≈{0} L gesamt/Tag (inkl. Nahrung), mehr bei Hitze oder Sport. Alkohol: so wenig wie möglich; kein Konsum ist völlig risikofrei.","Hidratáció: ≈{0} L összes folyadék naponta (az ételekkel együtt), hőségben vagy edzéskor több. Alkohol: minél kevesebb; nincs teljesen biztonságos mennyiség.");
+A('tip_move',"Mișcare: 150–300 min/săpt. de efort moderat și 2 zile de exerciții de forță; mișcarea completează alimentația.","Movement: 150–300 min/week of moderate activity plus 2 days of strength training; it complements nutrition.","Activité : 150 à 300 min/semaine d’effort modéré et 2 jours de renforcement musculaire ; elle complète l’alimentation.","Movimento: 150–300 min/settimana di attività moderata e 2 giorni di esercizi di forza; completa l’alimentazione.","Movimiento: 150–300 min/semana de actividad moderada y 2 días de fuerza; complementa la alimentación.","Movimento: 150–300 min/semana de atividade moderada e 2 dias de treino de força; complementa a alimentação.","Bewegung: 150–300 Min./Woche moderate Aktivität plus 2 Tage Krafttraining; sie ergänzt die Ernährung.","Mozgás: heti 150–300 perc mérsékelt aktivitás és 2 nap erősítés; kiegészíti a táplálkozást.");
+A('tip_vegan',"Vegan: B12 obligatoriu (supliment sau alimente fortificate); urmărește fierul, zincul, iodul, calciul și omega-3 (in, chia, nuci); combină leguminoase cu cereale.","Vegan: B12 is essential (supplement or fortified foods); watch iron, zinc, iodine, calcium and omega-3 (flax, chia, walnuts); combine legumes with grains.","Végétalien : la B12 est indispensable (complément ou aliments enrichis) ; surveillez fer, zinc, iode, calcium et oméga-3 (lin, chia, noix) ; associez légumineuses et céréales.","Vegano: la B12 è indispensabile (integratore o alimenti fortificati); attenzione a ferro, zinco, iodio, calcio e omega-3 (lino, chia, noci); abbina legumi e cereali.","Vegano: la B12 es imprescindible (suplemento o alimentos enriquecidos); vigila hierro, zinc, yodo, calcio y omega-3 (lino, chía, nueces); combina legumbres y cereales.","Vegano: a B12 é indispensável (suplemento ou alimentos fortificados); atenção a ferro, zinco, iodo, cálcio e ómega-3 (linhaça, chia, nozes); combine leguminosas com cereais.","Vegan: B12 ist unverzichtbar (Supplement oder angereicherte Lebensmittel); Eisen, Zink, Jod, Kalzium und Omega-3 (Lein, Chia, Walnüsse) beachten; Hülsenfrüchte mit Getreide kombinieren.","Vegán: a B12 nélkülözhetetlen (kiegészítő vagy dúsított étel); figyelj a vasra, cinkre, jódra, kalciumra és omega-3-ra (len, chia, dió); párosítsd a hüvelyeseket gabonával.");
+A('tip_veg',"Vegetarian: asociază sursele de fier (leguminoase, semințe de dovleac) cu vitamina C; B12 din lactate și ouă; verifică periodic feritina și B12.","Vegetarian: pair iron sources (legumes, pumpkin seeds) with vitamin C; get B12 from dairy and eggs; check ferritin and B12 periodically.","Végétarien : associez les sources de fer (légumineuses, graines de courge) à la vitamine C ; B12 via laitages et œufs ; contrôlez ferritine et B12 régulièrement.","Vegetariano: abbina le fonti di ferro (legumi, semi di zucca) alla vitamina C; B12 da latticini e uova; controlla periodicamente ferritina e B12.","Vegetariano: combina las fuentes de hierro (legumbres, pipas de calabaza) con vitamina C; B12 de lácteos y huevos; controla periódicamente ferritina y B12.","Vegetariano: combine fontes de ferro (leguminosas, sementes de abóbora) com vitamina C; B12 de laticínios e ovos; verifique periodicamente ferritina e B12.","Vegetarisch: Eisenquellen (Hülsenfrüchte, Kürbiskerne) mit Vitamin C kombinieren; B12 aus Milch und Eiern; Ferritin und B12 regelmäßig prüfen lassen.","Vegetáriánus: a vasforrásokat (hüvelyesek, tökmag) párosítsd C-vitaminnal; a B12 tejből és tojásból jön; időnként ellenőriztesd a ferritint és a B12-t.");
+A('tip_dm2',"Diabet/prediabet: repartizează uniform carbohidrații în mese, alege indice glicemic mic (integrale, leguminoase), multe legume fără amidon, evită sucurile; urmează schema stabilită de medic.","Diabetes/prediabetes: spread carbohydrates evenly across meals, choose low-GI foods (whole grains, legumes), plenty of non-starchy vegetables, avoid sugary drinks; follow your doctor’s plan.","Diabète/prédiabète : répartissez les glucides régulièrement sur les repas, choisissez des aliments à IG bas (céréales complètes, légumineuses), beaucoup de légumes non féculents, évitez les boissons sucrées ; suivez le plan de votre médecin.","Diabete/prediabete: distribuisci i carboidrati in modo uniforme nei pasti, scegli alimenti a basso IG (integrali, legumi), molte verdure non amidacee, evita le bevande zuccherate; segui il piano del medico.","Diabetes/prediabetes: reparte los hidratos de carbono de forma uniforme, elige alimentos de IG bajo (integrales, legumbres), muchas verduras no feculentas, evita las bebidas azucaradas; sigue el plan de tu médico.","Diabetes/pré-diabetes: distribua os hidratos de carbono de forma uniforme pelas refeições, escolha alimentos de IG baixo (integrais, leguminosas), muitos legumes não amiláceos, evite bebidas açucaradas; siga o plano do seu médico.","Diabetes/Prädiabetes: Kohlenhydrate gleichmäßig auf die Mahlzeiten verteilen, niedrigen GI wählen (Vollkorn, Hülsenfrüchte), viel stärkearmes Gemüse, Süßgetränke meiden; dem Plan deines Arztes folgen.","Cukorbetegség/prediabétesz: oszd el egyenletesen a szénhidrátot, válassz alacsony glikémiás indexű ételeket (teljes kiőrlésű, hüvelyesek), sok nem keményítős zöldséget, kerüld az édes italokat; kövesd az orvosod tervét.");
+A('tip_htn',"Hipertensiune: tipar DASH (legume, fructe, lactate slabe, cereale integrale), sare sub 5 g, alimente bogate în potasiu; dacă iei tratament sau ai boală renală, cere sfatul medicului înainte să crești potasiul.","High blood pressure: DASH pattern (vegetables, fruit, low-fat dairy, whole grains), salt under 5 g, potassium-rich foods; if you take medication or have kidney disease, ask your doctor before increasing potassium.","Hypertension : modèle DASH (légumes, fruits, laitages allégés, céréales complètes), sel sous 5 g, aliments riches en potassium ; si vous prenez un traitement ou avez une maladie rénale, demandez conseil avant d’augmenter le potassium.","Ipertensione: schema DASH (verdura, frutta, latticini magri, cereali integrali), sale sotto 5 g, alimenti ricchi di potassio; se prendi farmaci o hai una malattia renale, chiedi al medico prima di aumentare il potassio.","Hipertensión: patrón DASH (verduras, fruta, lácteos bajos en grasa, cereales integrales), sal por debajo de 5 g, alimentos ricos en potasio; si tomas medicación o tienes enfermedad renal, consulta antes de aumentar el potasio.","Hipertensão: padrão DASH (legumes, fruta, laticínios magros, cereais integrais), sal abaixo de 5 g, alimentos ricos em potássio; se toma medicação ou tem doença renal, consulte o médico antes de aumentar o potássio.","Bluthochdruck: DASH-Muster (Gemüse, Obst, fettarme Milchprodukte, Vollkorn), Salz unter 5 g, kaliumreiche Lebensmittel; bei Medikamenten oder Nierenerkrankung vor mehr Kalium den Arzt fragen.","Magas vérnyomás: DASH-étrend (zöldség, gyümölcs, alacsony zsírtartalmú tejtermék, teljes kiőrlésű gabona), 5 g alatti só, káliumban gazdag ételek; gyógyszer vagy vesebetegség esetén a több kálium előtt kérdezd az orvost.");
+A('tip_chol',"Colesterol crescut: grăsimi saturate ≈6% din energie, fibre solubile (ovăz, leguminoase, fructe), nuci, ulei de măsline, pește; fără grăsimi trans.","High cholesterol: saturated fat ≈6% of energy, soluble fibre (oats, legumes, fruit), nuts, olive oil, fish; no trans fats.","Cholestérol élevé : graisses saturées ≈6 % de l’énergie, fibres solubles (avoine, légumineuses, fruits), noix, huile d’olive, poisson ; pas de graisses trans.","Colesterolo alto: grassi saturi ≈6% dell’energia, fibre solubili (avena, legumi, frutta), frutta secca, olio d’oliva, pesce; niente grassi trans.","Colesterol alto: grasas saturadas ≈6 % de la energía, fibra soluble (avena, legumbres, fruta), frutos secos, aceite de oliva, pescado; sin grasas trans.","Colesterol elevado: gorduras saturadas ≈6% da energia, fibra solúvel (aveia, leguminosas, fruta), frutos secos, azeite, peixe; sem gorduras trans.","Erhöhtes Cholesterin: gesättigte Fette ≈6 % der Energie, lösliche Ballaststoffe (Hafer, Hülsenfrüchte, Obst), Nüsse, Olivenöl, Fisch; keine Transfette.","Magas koleszterin: telített zsír ≈6% az energiából, oldódó rostok (zab, hüvelyesek, gyümölcs), magvak, olívaolaj, hal; transzzsír nélkül.");
+A('tip_preg',"Sarcină/alăptare: fără regim de slăbire; acid folic 400 µg/zi (înainte de concepție și în primul trimestru), fier și iod conform medicului; evită alcoolul, peștele crud, ficatul, brânzeturile nepasteurizate.","Pregnancy/breastfeeding: no weight-loss diets; folic acid 400 µg/day (before conception and in the first trimester), iron and iodine as advised by your doctor; avoid alcohol, raw fish, liver and unpasteurised cheese.","Grossesse/allaitement : pas de régime amaigrissant ; acide folique 400 µg/jour (avant la conception et au premier trimestre), fer et iode selon l’avis médical ; évitez alcool, poisson cru, foie et fromages au lait cru.","Gravidanza/allattamento: niente diete dimagranti; acido folico 400 µg/giorno (prima del concepimento e nel primo trimestre), ferro e iodio secondo il medico; evita alcol, pesce crudo, fegato e formaggi non pastorizzati.","Embarazo/lactancia: sin dietas de adelgazamiento; ácido fólico 400 µg/día (antes de la concepción y en el primer trimestre), hierro y yodo según tu médico; evita alcohol, pescado crudo, hígado y quesos no pasteurizados.","Gravidez/amamentação: sem dietas de emagrecimento; ácido fólico 400 µg/dia (antes da conceção e no primeiro trimestre), ferro e iodo conforme o médico; evite álcool, peixe cru, fígado e queijos não pasteurizados.","Schwangerschaft/Stillzeit: keine Abnehmdiäten; Folsäure 400 µg/Tag (vor der Empfängnis und im ersten Trimester), Eisen und Jod nach ärztlichem Rat; Alkohol, rohen Fisch, Leber und unpasteurisierten Käse meiden.","Terhesség/szoptatás: ne fogyókúrázz; folsav napi 400 µg (fogantatás előtt és az első trimeszterben), vas és jód az orvosod tanácsa szerint; kerüld az alkoholt, nyers halat, májat és nem pasztőrözött sajtot.");
+A('tip_senior',"După 65 de ani: proteine ≈1,0–1,2 g/kg, vitamina D și B12, hidratare activă și exerciții de forță pentru a preveni pierderea de masă musculară.","Over 65: protein ≈1.0–1.2 g/kg, vitamin D and B12, active hydration and strength exercise to prevent muscle loss.","Après 65 ans : protéines ≈1,0–1,2 g/kg, vitamine D et B12, hydratation active et renforcement musculaire pour prévenir la perte de muscle.","Dopo i 65 anni: proteine ≈1,0–1,2 g/kg, vitamina D e B12, idratazione attiva ed esercizi di forza per prevenire la perdita muscolare.","Después de los 65: proteínas ≈1,0–1,2 g/kg, vitamina D y B12, hidratación activa y ejercicio de fuerza para prevenir la pérdida muscular.","Após os 65 anos: proteínas ≈1,0–1,2 g/kg, vitamina D e B12, hidratação ativa e exercício de força para prevenir a perda muscular.","Ab 65: Eiweiß ≈1,0–1,2 g/kg, Vitamin D und B12, bewusstes Trinken und Krafttraining gegen Muskelabbau.","65 év felett: fehérje ≈1,0–1,2 g/ttkg, D- és B12-vitamin, tudatos folyadékbevitel és erősítés az izomvesztés ellen.");
+A('tip_bmilow',"IMC sub 18,5: nu urmări slăbirea; alege alimente dense energetic (nuci, ulei de măsline, lactate, leguminoase) și cere un consult medical pentru a afla cauza.","BMI below 18.5: do not aim to lose weight; choose energy-dense foods (nuts, olive oil, dairy, legumes) and see a doctor to find the cause.","IMC inférieur à 18,5 : ne cherchez pas à maigrir ; privilégiez les aliments énergétiques (noix, huile d’olive, laitages, légumineuses) et consultez un médecin pour en trouver la cause.","BMI sotto 18,5: non puntare a dimagrire; scegli alimenti ad alta densità energetica (frutta secca, olio d’oliva, latticini, legumi) e consulta un medico per capirne la causa.","IMC inferior a 18,5: no busques adelgazar; elige alimentos densos en energía (frutos secos, aceite de oliva, lácteos, legumbres) y consulta a un médico para conocer la causa.","IMC abaixo de 18,5: não procure emagrecer; escolha alimentos densos em energia (frutos secos, azeite, laticínios, leguminosas) e consulte um médico para saber a causa.","BMI unter 18,5: nicht abnehmen wollen; energiedichte Lebensmittel wählen (Nüsse, Olivenöl, Milchprodukte, Hülsenfrüchte) und die Ursache ärztlich abklären lassen.","BMI 18,5 alatt: ne fogyj tovább; válassz energiadús ételeket (magvak, olívaolaj, tejtermék, hüvelyesek), és orvossal tisztázd az okot.");
+A('tip_bmihigh',"IMC ≥30: o scădere de 5–10% din greutate aduce beneficii metabolice și cardiovasculare; urmează un plan gradual și discută cu medicul.","BMI ≥30: losing 5–10% of body weight brings metabolic and cardiovascular benefits; follow a gradual plan and talk to your doctor.","IMC ≥30 : perdre 5 à 10 % du poids apporte des bénéfices métaboliques et cardiovasculaires ; suivez un plan progressif et parlez-en à votre médecin.","BMI ≥30: perdere il 5–10% del peso porta benefici metabolici e cardiovascolari; segui un piano graduale e parlane con il medico.","IMC ≥30: perder el 5–10 % del peso aporta beneficios metabólicos y cardiovasculares; sigue un plan gradual y consúltalo con tu médico.","IMC ≥30: perder 5–10% do peso traz benefícios metabólicos e cardiovasculares; siga um plano gradual e fale com o seu médico.","BMI ≥30: 5–10 % Gewichtsabnahme bringen metabolische und kardiovaskuläre Vorteile; schrittweise vorgehen und mit dem Arzt sprechen.","BMI ≥30: a testsúly 5–10%-ának leadása anyagcsere- és szív-érrendszeri előnyökkel jár; haladj fokozatosan, és beszélj az orvosoddal.");
+A('ss_efsa',"Valori dietetice de referință pentru adulți (energie, proteine, fibre, vitamine, minerale) – baza tabelului de micronutrienți și a țintelor de fibre și hidratare.","Dietary reference values for adults (energy, protein, fibre, vitamins, minerals) – the basis of the micronutrient table and the fibre and hydration targets.","Valeurs nutritionnelles de référence pour adultes (énergie, protéines, fibres, vitamines, minéraux) – base du tableau des micronutriments et des repères fibres et hydratation.","Valori dietetici di riferimento per adulti (energia, proteine, fibre, vitamine, minerali) – base della tabella dei micronutrienti e degli obiettivi di fibre e idratazione.","Valores dietéticos de referencia para adultos (energía, proteínas, fibra, vitaminas, minerales): base de la tabla de micronutrientes y de las metas de fibra e hidratación.","Valores dietéticos de referência para adultos (energia, proteínas, fibra, vitaminas, minerais) – base da tabela de micronutrientes e das metas de fibra e hidratação.","Referenzwerte für die Nährstoffzufuhr bei Erwachsenen (Energie, Eiweiß, Ballaststoffe, Vitamine, Mineralstoffe) – Grundlage der Mikronährstofftabelle sowie der Ballaststoff- und Flüssigkeitsziele.","Étrendi referenciaértékek felnőtteknek (energia, fehérje, rost, vitaminok, ásványi anyagok) – a mikrotápanyag-táblázat, valamint a rost- és folyadékcélok alapja.");
+A('ss_harvard',"Modelul farfuriei: jumătate legume și fructe, un sfert cereale integrale, un sfert proteine sănătoase; uleiuri sănătoase și apă; limitează ultraprocesatele.","The plate model: half vegetables and fruit, a quarter whole grains, a quarter healthy protein; healthy oils and water; limit ultra-processed foods.","Le modèle de l’assiette : moitié légumes et fruits, un quart de céréales complètes, un quart de protéines saines ; huiles saines et eau ; limiter les produits ultra-transformés.","Il modello del piatto: metà verdura e frutta, un quarto cereali integrali, un quarto proteine sane; oli sani e acqua; limitare gli ultraprocessati.","El modelo del plato: mitad verduras y fruta, un cuarto cereales integrales, un cuarto proteína saludable; aceites saludables y agua; limitar los ultraprocesados.","O modelo do prato: metade legumes e fruta, um quarto cereais integrais, um quarto proteína saudável; óleos saudáveis e água; limitar os ultraprocessados.","Das Tellermodell: halb Gemüse und Obst, ein Viertel Vollkorn, ein Viertel gesundes Eiweiß; gesunde Öle und Wasser; Ultra-Verarbeitetes begrenzen.","A tányérmodell: fele zöldség és gyümölcs, negyede teljes kiőrlésű gabona, negyede egészséges fehérje; egészséges olajok és víz; az ultrafeldolgozott ételek korlátozása.");
+A('ss_med',"Tipar bogat în ulei de măsline, leguminoase, nuci, pește, legume și fructe; în studiul PREDIMED a fost asociat cu risc cardiovascular mai mic.","A pattern rich in olive oil, legumes, nuts, fish, vegetables and fruit; in the PREDIMED trial it was linked to lower cardiovascular risk.","Un modèle riche en huile d’olive, légumineuses, noix, poisson, légumes et fruits ; dans l’essai PREDIMED, il a été associé à un risque cardiovasculaire plus faible.","Un modello ricco di olio d’oliva, legumi, frutta secca, pesce, verdura e frutta; nello studio PREDIMED è stato associato a un rischio cardiovascolare minore.","Un patrón rico en aceite de oliva, legumbres, frutos secos, pescado, verduras y fruta; en el ensayo PREDIMED se asoció a menor riesgo cardiovascular.","Um padrão rico em azeite, leguminosas, frutos secos, peixe, legumes e fruta; no ensaio PREDIMED foi associado a menor risco cardiovascular.","Ein Muster reich an Olivenöl, Hülsenfrüchten, Nüssen, Fisch, Gemüse und Obst; in der PREDIMED-Studie mit geringerem Herz-Kreislauf-Risiko verbunden.","Olívaolajban, hüvelyesekben, magvakban, halban, zöldségben és gyümölcsben gazdag étrend; a PREDIMED vizsgálatban alacsonyabb szív-érrendszeri kockázattal járt együtt.");
+A('ss_ada',"Plan individualizat: legume fără amidon, cereale integrale, mai puțini carbohidrați rafinați și zaharuri adăugate, carbohidrați distribuiți regulat.","Individualised plan: non-starchy vegetables, whole grains, fewer refined carbohydrates and added sugars, carbohydrates spread regularly.","Plan individualisé : légumes non féculents, céréales complètes, moins de glucides raffinés et de sucres ajoutés, glucides répartis régulièrement.","Piano individualizzato: verdure non amidacee, cereali integrali, meno carboidrati raffinati e zuccheri aggiunti, carboidrati distribuiti con regolarità.","Plan individualizado: verduras no feculentas, cereales integrales, menos hidratos refinados y azúcares añadidos, hidratos repartidos con regularidad.","Plano individualizado: legumes não amiláceos, cereais integrais, menos hidratos de carbono refinados e açúcares adicionados, hidratos distribuídos com regularidade.","Individueller Plan: stärkearmes Gemüse, Vollkorn, weniger raffinierte Kohlenhydrate und zugesetzter Zucker, regelmäßig verteilte Kohlenhydrate.","Egyéni terv: nem keményítős zöldségek, teljes kiőrlésű gabona, kevesebb finomított szénhidrát és hozzáadott cukor, rendszeresen elosztott szénhidrát.");
+A('ss_nhlbi',"Tipar DASH pentru tensiune: legume, fructe, cereale integrale, lactate slabe și mai puțin sodiu (2300 mg/zi, ideal 1500 mg).","DASH pattern for blood pressure: vegetables, fruit, whole grains, low-fat dairy and less sodium (2,300 mg/day, ideally 1,500 mg).","Modèle DASH pour la tension : légumes, fruits, céréales complètes, laitages allégés et moins de sodium (2 300 mg/jour, idéalement 1 500 mg).","Schema DASH per la pressione: verdura, frutta, cereali integrali, latticini magri e meno sodio (2300 mg/giorno, idealmente 1500 mg).","Patrón DASH para la tensión: verduras, fruta, cereales integrales, lácteos bajos en grasa y menos sodio (2300 mg/día, idealmente 1500 mg).","Padrão DASH para a tensão: legumes, fruta, cereais integrais, laticínios magros e menos sódio (2300 mg/dia, idealmente 1500 mg).","DASH-Muster für den Blutdruck: Gemüse, Obst, Vollkorn, fettarme Milchprodukte und weniger Natrium (2300 mg/Tag, ideal 1500 mg).","DASH-étrend a vérnyomásért: zöldség, gyümölcs, teljes kiőrlésű gabona, alacsony zsírtartalmú tejtermék és kevesebb nátrium (2300 mg/nap, ideálisan 1500 mg).");
+A('ss_issn',"Persoane active: 1,4–2,0 g proteine/kg/zi, repartizate în mese de 20–40 g.","Active people: 1.4–2.0 g protein/kg/day, spread over meals of 20–40 g.","Personnes actives : 1,4–2,0 g de protéines/kg/jour, réparties en repas de 20–40 g.","Persone attive: 1,4–2,0 g di proteine/kg/giorno, distribuite in pasti da 20–40 g.","Personas activas: 1,4–2,0 g de proteína/kg/día, repartidas en comidas de 20–40 g.","Pessoas ativas: 1,4–2,0 g de proteína/kg/dia, repartidas por refeições de 20–40 g.","Aktive Personen: 1,4–2,0 g Eiweiß/kg/Tag, verteilt auf Mahlzeiten von 20–40 g.","Aktív személyek: napi 1,4–2,0 g fehérje/ttkg, 20–40 g-os étkezésekre elosztva.");
+A('ss_wcrf',"Limitează carnea roșie și evită mezelurile; mult cereale integrale, legume, fructe, leguminoase; puține băuturi dulci și alcool.","Limit red meat and avoid processed meats; plenty of whole grains, vegetables, fruit, legumes; few sugary drinks and little alcohol.","Limiter la viande rouge et éviter les charcuteries ; beaucoup de céréales complètes, légumes, fruits, légumineuses ; peu de boissons sucrées et d’alcool.","Limitare della carne rossa ed evitare i salumi; molti cereali integrali, verdura, frutta, legumi; poche bevande zuccherate e poco alcol.","Limitar la carne roja y evitar los procesados cárnicos; muchos cereales integrales, verduras, fruta, legumbres; pocas bebidas azucaradas y poco alcohol.","Limitar a carne vermelha e evitar processados; muitos cereais integrais, legumes, fruta, leguminosas; poucas bebidas açucaradas e pouco álcool.","Rotes Fleisch begrenzen, verarbeitete Fleischwaren meiden; viel Vollkorn, Gemüse, Obst, Hülsenfrüchte; wenig Süßgetränke und Alkohol.","A vörös hús korlátozása, a feldolgozott húskészítmények kerülése; sok teljes kiőrlésű gabona, zöldség, gyümölcs, hüvelyes; kevés üdítő és alkohol.");
+A('ss_espen',"Adulți în vârstă: ≈1,0–1,2 g proteine/kg/zi, hidratare, prevenirea malnutriției și a sarcopeniei.","Older adults: ≈1.0–1.2 g protein/kg/day, hydration, prevention of malnutrition and sarcopenia.","Adultes âgés : ≈1,0–1,2 g de protéines/kg/jour, hydratation, prévention de la dénutrition et de la sarcopénie.","Anziani: ≈1,0–1,2 g di proteine/kg/giorno, idratazione, prevenzione di malnutrizione e sarcopenia.","Personas mayores: ≈1,0–1,2 g de proteína/kg/día, hidratación, prevención de la desnutrición y la sarcopenia.","Idosos: ≈1,0–1,2 g de proteína/kg/dia, hidratação, prevenção da desnutrição e da sarcopenia.","Ältere Erwachsene: ≈1,0–1,2 g Eiweiß/kg/Tag, Flüssigkeit, Vorbeugung von Mangelernährung und Sarkopenie.","Idősebb felnőttek: ≈1,0–1,2 g fehérje/ttkg/nap, folyadékpótlás, az alultápláltság és a szarkopénia megelőzése.");
+A('ss_aand',"Dietele vegetariene și vegane bine planificate sunt adecvate; atenție la B12, fier, zinc, iod, calciu, omega-3.","Well-planned vegetarian and vegan diets are appropriate; watch B12, iron, zinc, iodine, calcium, omega-3.","Les régimes végétariens et végétaliens bien planifiés sont adaptés ; attention à la B12, au fer, zinc, iode, calcium et oméga-3.","Le diete vegetariane e vegane ben pianificate sono adeguate; attenzione a B12, ferro, zinco, iodio, calcio, omega-3.","Las dietas vegetarianas y veganas bien planificadas son adecuadas; vigila B12, hierro, zinc, yodo, calcio, omega-3.","As dietas vegetarianas e veganas bem planeadas são adequadas; atenção à B12, ferro, zinco, iodo, cálcio, ómega-3.","Gut geplante vegetarische und vegane Ernährung ist geeignet; auf B12, Eisen, Zink, Jod, Kalzium, Omega-3 achten.","A jól megtervezett vegetáriánus és vegán étrend megfelelő; figyelj a B12-re, vasra, cinkre, jódra, kalciumra, omega-3-ra.");
+A('ss_aha',"Grăsimi saturate ≈5–6% din energie pentru scăderea LDL; grăsimi nesaturate, fibre, pește; fără grăsimi trans.","Saturated fat ≈5–6% of energy to lower LDL; unsaturated fats, fibre, fish; no trans fats.","Graisses saturées ≈5–6 % de l’énergie pour abaisser le LDL ; graisses insaturées, fibres, poisson ; pas de graisses trans.","Grassi saturi ≈5–6% dell’energia per ridurre l’LDL; grassi insaturi, fibre, pesce; niente grassi trans.","Grasas saturadas ≈5–6 % de la energía para reducir el LDL; grasas insaturadas, fibra, pescado; sin grasas trans.","Gorduras saturadas ≈5–6% da energia para reduzir o LDL; gorduras insaturadas, fibra, peixe; sem gorduras trans.","Gesättigte Fette ≈5–6 % der Energie zur LDL-Senkung; ungesättigte Fette, Ballaststoffe, Fisch; keine Transfette.","Telített zsír ≈5–6% az energiából az LDL csökkentésére; telítetlen zsírok, rost, hal; transzzsír nélkül.");
+A('notfound',"Alimentul nu a fost găsit.","Food not found.","Aliment introuvable.","Alimento non trovato.","Alimento no encontrado.","Alimento não encontrado.","Lebensmittel nicht gefunden.","Az étel nem található.");
+A('imp_ok',"Date importate.","Data imported.","Données importées.","Dati importati.","Datos importados.","Dados importados.","Daten importiert.","Adatok importálva.");
+A('imp_bad',"Fișier invalid.","Invalid file.","Fichier invalide.","File non valido.","Archivo no válido.","Ficheiro inválido.","Ungültige Datei.","Érvénytelen fájl.");
+A('err_range',"{0}: introdu o valoare între {1} și {2}.","{0}: enter a value between {1} and {2}.","{0} : saisissez une valeur entre {1} et {2}.","{0}: inserisci un valore tra {1} e {2}.","{0}: introduce un valor entre {1} y {2}.","{0}: introduza um valor entre {1} e {2}.","{0}: Wert zwischen {1} und {2} eingeben.","{0}: adj meg egy értéket {1} és {2} között.");
+A('note_adj',"Obiectivul a fost ajustat la menținere din motive de siguranță (sarcină/alăptare, subponderal, obezitate cu obiectiv de creștere în greutate sau un deficit prea mic pentru a conta). Discută obiectivul cu medicul.","Your goal was adjusted to maintenance for safety (pregnancy/breastfeeding, underweight, obesity with a weight-gain goal, or a deficit too small to matter). Discuss your goal with your doctor.","Votre objectif a été ajusté au maintien par sécurité (grossesse/allaitement, insuffisance pondérale, obésité avec objectif de prise de poids, ou déficit trop faible pour compter). Discutez-en avec votre médecin.","Per sicurezza l’obiettivo è stato portato al mantenimento (gravidanza/allattamento, sottopeso, obesità con obiettivo di aumento di peso o deficit troppo piccolo per essere significativo). Parlane con il medico.","Por seguridad, tu objetivo se ha ajustado a mantenimiento (embarazo/lactancia, bajo peso, obesidad con objetivo de aumento de peso o un déficit demasiado pequeño para ser relevante). Coméntalo con tu médico.","Por segurança, o objetivo foi ajustado para manutenção (gravidez/amamentação, baixo peso, obesidade com objetivo de ganho de peso ou um défice demasiado pequeno para contar). Fale com o seu médico.","Aus Sicherheitsgründen wurde dein Ziel auf Gewichtserhalt angepasst (Schwangerschaft/Stillzeit, Untergewicht, Adipositas mit Zunahmeziel oder ein zu kleines Defizit). Besprich dein Ziel mit deinem Arzt.","Biztonsági okból a célodat súlytartásra módosítottuk (terhesség/szoptatás, alulsúly, elhízás súlygyarapodási céllal, vagy túl kicsi energiahiány). Beszéld meg az orvosoddal.");
+A('note_low',"Necesarul tău estimat este foarte scăzut (sub 1200 kcal/zi). Aplicația nu recomandă niciodată mai puțin de 1200 kcal/zi; discută cu un medic sau dietetician.","Your estimated needs are very low (under 1,200 kcal/day). The app never recommends less than 1,200 kcal/day; talk to a doctor or dietitian.","Vos besoins estimés sont très faibles (moins de 1 200 kcal/jour). L’application ne recommande jamais moins de 1 200 kcal/jour ; parlez-en à un médecin ou à un diététicien.","Il tuo fabbisogno stimato è molto basso (sotto 1200 kcal/giorno). L’app non raccomanda mai meno di 1200 kcal/giorno; parlane con un medico o un dietista.","Tus necesidades estimadas son muy bajas (menos de 1200 kcal/día). La aplicación nunca recomienda menos de 1200 kcal/día; consúltalo con un médico o dietista.","As suas necessidades estimadas são muito baixas (abaixo de 1200 kcal/dia). A aplicação nunca recomenda menos de 1200 kcal/dia; fale com um médico ou dietista.","Dein geschätzter Bedarf ist sehr niedrig (unter 1200 kcal/Tag). Die App empfiehlt nie weniger als 1200 kcal/Tag; sprich mit Arzt oder Ernährungsberater.","A becsült szükségleted nagyon alacsony (napi 1200 kcal alatt). Az alkalmazás sosem javasol 1200 kcal/nap alatti értéket; beszélj orvossal vagy dietetikussal.");
+A('note_tw',"Greutatea țintă este sub intervalul sănătos pentru înălțimea ta ({0}–{1} kg). Alege o țintă din interval sau discut-o cu medicul.","Your target weight is below the healthy range for your height ({0}–{1} kg). Choose a target within the range or discuss it with your doctor.","Votre poids cible est inférieur à la plage saine pour votre taille ({0}–{1} kg). Choisissez une cible dans la plage ou parlez-en à votre médecin.","Il peso obiettivo è sotto l’intervallo salutare per la tua altezza ({0}–{1} kg). Scegli un obiettivo nell’intervallo o parlane con il medico.","Tu peso objetivo está por debajo del rango saludable para tu altura ({0}–{1} kg). Elige un objetivo dentro del rango o coméntalo con tu médico.","O seu peso-alvo está abaixo do intervalo saudável para a sua altura ({0}–{1} kg). Escolha um alvo dentro do intervalo ou fale com o seu médico.","Dein Zielgewicht liegt unter dem gesunden Bereich für deine Größe ({0}–{1} kg). Wähle ein Ziel im Bereich oder besprich es mit deinem Arzt.","A célsúlyod a magasságodhoz tartozó egészséges tartomány alatt van ({0}–{1} kg). Válassz a tartományon belüli célt, vagy beszéld meg az orvosoddal.");
+A('tip_preg2',"Necesarul de energie crește în trimestrele 2 și 3 (≈+250–500 kcal/zi) și în alăptarea exclusivă (≈+330 kcal/zi); cere medicului sau moașei o țintă personalizată.","Energy needs rise in the 2nd and 3rd trimesters (≈+250–500 kcal/day) and during exclusive breastfeeding (≈+330 kcal/day); ask your doctor or midwife for a personalised target.","Les besoins énergétiques augmentent aux 2e et 3e trimestres (≈ +250 à 500 kcal/jour) et pendant l’allaitement exclusif (≈ +330 kcal/jour) ; demandez un objectif personnalisé à votre médecin ou sage-femme.","Il fabbisogno energetico aumenta nel 2° e 3° trimestre (≈ +250–500 kcal/giorno) e durante l’allattamento esclusivo (≈ +330 kcal/giorno); chiedi a medico o ostetrica un obiettivo personalizzato.","Las necesidades de energía aumentan en el 2.º y 3.er trimestre (≈ +250–500 kcal/día) y durante la lactancia exclusiva (≈ +330 kcal/día); pide a tu médico o matrona un objetivo personalizado.","As necessidades energéticas aumentam no 2.º e 3.º trimestres (≈ +250–500 kcal/dia) e na amamentação exclusiva (≈ +330 kcal/dia); peça ao médico ou enfermeiro obstetra uma meta personalizada.","Der Energiebedarf steigt im 2. und 3. Trimester (≈ +250–500 kcal/Tag) und beim ausschließlichen Stillen (≈ +330 kcal/Tag); lass dir von Arzt oder Hebamme ein persönliches Ziel nennen.","Az energiaigény a 2. és 3. trimeszterben (≈ +250–500 kcal/nap) és kizárólagos szoptatás alatt (≈ +330 kcal/nap) nő; kérj személyre szabott célt orvostól vagy szülésznőtől.");
+A('tip_lose',"Țintă ≈{0} kcal/zi (deficit {1}%), ritm estimat ≈{2} kg/săpt. O scădere graduală (de obicei până la 0,5–1 kg/săpt.) se menține mai ușor; evită dietele drastice.","Target ≈{0} kcal/day ({1}% deficit), estimated pace ≈{2} kg/week. Gradual loss (generally up to 0.5–1 kg/week) is easier to keep off; avoid crash diets.","Objectif ≈{0} kcal/jour (déficit de {1} %), rythme estimé ≈{2} kg/semaine. Une perte progressive (en général jusqu’à 0,5–1 kg/semaine) se maintient mieux ; évitez les régimes drastiques.","Obiettivo ≈{0} kcal/giorno (deficit {1}%), ritmo stimato ≈{2} kg/settimana. Una perdita graduale (in genere fino a 0,5–1 kg/settimana) si mantiene meglio; evita le diete drastiche.","Objetivo ≈{0} kcal/día (déficit del {1} %), ritmo estimado ≈{2} kg/semana. Una pérdida gradual (por lo general hasta 0,5–1 kg/semana) se mantiene mejor; evita las dietas drásticas.","Meta ≈{0} kcal/dia (défice de {1}%), ritmo estimado ≈{2} kg/semana. Uma perda gradual (em geral até 0,5–1 kg/semana) mantém-se melhor; evite dietas drásticas.","Ziel ≈{0} kcal/Tag ({1} % Defizit), geschätztes Tempo ≈{2} kg/Woche. Ein allmählicher Verlust (in der Regel bis 0,5–1 kg/Woche) lässt sich besser halten; keine Crash-Diäten.","Cél ≈{0} kcal/nap ({1}% energiahiány), becsült ütem ≈{2} kg/hét. A fokozatos fogyást (általában hetente legfeljebb 0,5–1 kg) könnyebb megtartani; kerüld a drasztikus diétákat.");
+A('ss_who',"≥400 g legume și fructe/zi; zahăr liber sub 10% din energie (ideal 5%); sare sub 5 g; grăsimi sub 30% din energie, saturate sub 10%, fără trans.","≥400 g fruit and vegetables/day; free sugars under 10% of energy (ideally 5%); salt under 5 g; fat under 30% of energy, saturated under 10%, no trans fats.","≥400 g de fruits et légumes/jour ; sucres libres sous 10 % de l’énergie (idéalement 5 %) ; sel sous 5 g ; lipides sous 30 % de l’énergie, saturés sous 10 %, sans trans.","≥400 g di frutta e verdura/giorno; zuccheri liberi sotto il 10% dell’energia (idealmente 5%); sale sotto 5 g; grassi sotto il 30% dell’energia, saturi sotto il 10%, niente trans.","≥400 g de fruta y verdura/día; azúcares libres por debajo del 10 % de la energía (idealmente 5 %); sal por debajo de 5 g; grasas por debajo del 30 % de la energía, saturadas por debajo del 10 %, sin trans.","≥400 g de fruta e legumes/dia; açúcares livres abaixo de 10% da energia (idealmente 5%); sal abaixo de 5 g; gorduras abaixo de 30% da energia, saturadas abaixo de 10%, sem trans.","≥400 g Obst und Gemüse/Tag; freie Zucker unter 10 % der Energie (ideal 5 %); Salz unter 5 g; Fett unter 30 % der Energie, gesättigt unter 10 %, keine Transfette.","Napi ≥400 g gyümölcs és zöldség; szabad cukor az energia 10%-a alatt (ideálisan 5%); só 5 g alatt; zsír az energia 30%-a alatt, ebből telített 10% alatt, transzzsír nélkül.");
+A('ss_whopa',"Adulți: 150–300 min/săpt. de activitate aerobă moderată (sau 75–150 min intensă) plus exerciții de forță în cel puțin 2 zile pe săptămână.","Adults: 150–300 min/week of moderate aerobic activity (or 75–150 min vigorous) plus muscle-strengthening on at least 2 days a week.","Adultes : 150–300 min/semaine d’activité aérobie modérée (ou 75–150 min intense) et renforcement musculaire au moins 2 jours par semaine.","Adulti: 150–300 min/settimana di attività aerobica moderata (o 75–150 min intensa) più esercizi di forza almeno 2 giorni a settimana.","Adultos: 150–300 min/semana de actividad aeróbica moderada (o 75–150 min intensa) más ejercicios de fuerza al menos 2 días por semana.","Adultos: 150–300 min/semana de atividade aeróbica moderada (ou 75–150 min intensa) mais exercícios de força em pelo menos 2 dias por semana.","Erwachsene: 150–300 Min./Woche moderate Ausdaueraktivität (oder 75–150 Min. intensiv) plus Krafttraining an mindestens 2 Tagen pro Woche.","Felnőtteknek: heti 150–300 perc mérsékelt aerob aktivitás (vagy 75–150 perc intenzív) plusz izomerősítés legalább heti 2 napon.");
+A('ss_cdc',"O scădere graduală și constantă (aprox. 0,5–1 kg pe săptămână) se menține mai ușor; pierderea a 5–10% din greutate aduce beneficii pentru sănătate.","Gradual, steady loss (about 0.5–1 kg, i.e. 1–2 lb, per week) is more likely to be kept off; losing 5–10% of body weight brings health benefits.","Une perte progressive et régulière (environ 0,5–1 kg par semaine) se maintient plus facilement ; perdre 5 à 10 % du poids apporte des bénéfices pour la santé.","Una perdita graduale e costante (circa 0,5–1 kg a settimana) si mantiene più facilmente; perdere il 5–10% del peso porta benefici per la salute.","Una pérdida gradual y constante (unos 0,5–1 kg por semana) se mantiene mejor; perder el 5–10 % del peso aporta beneficios para la salud.","Uma perda gradual e constante (cerca de 0,5–1 kg por semana) mantém-se mais facilmente; perder 5–10% do peso traz benefícios para a saúde.","Ein allmählicher, stetiger Gewichtsverlust (etwa 0,5–1 kg pro Woche) lässt sich eher halten; 5–10 % Gewichtsabnahme bringen gesundheitliche Vorteile.","A fokozatos, egyenletes fogyást (hetente kb. 0,5–1 kg) könnyebb megtartani; a testsúly 5–10%-ának leadása egészségügyi előnyökkel jár.");
+A('no3',"Nucile, inul și chia furnizează ALA, care nu echivalează cu EPA+DHA; fără pește, o sursă din alge (supliment) se discută cu medicul sau dieteticianul.","Walnuts, flax and chia provide ALA, which is not equivalent to EPA+DHA; without fish, an algae-based supplement is a matter for your doctor or dietitian.","Noix, lin et chia apportent de l’ALA, qui n’équivaut pas à l’EPA+DHA ; sans poisson, un complément à base d’algues se discute avec votre médecin ou diététicien.","Noci, lino e chia forniscono ALA, che non equivale a EPA+DHA; senza pesce, un integratore a base di alghe va valutato con medico o dietista.","Nueces, lino y chía aportan ALA, que no equivale a EPA+DHA; sin pescado, un suplemento de algas se consulta con tu médico o dietista.","Nozes, linhaça e chia fornecem ALA, que não equivale a EPA+DHA; sem peixe, um suplemento à base de algas deve ser discutido com o médico ou dietista.","Walnüsse, Lein und Chia liefern ALA, das nicht EPA+DHA entspricht; ohne Fisch ist ein Algenpräparat mit Arzt oder Ernährungsberater zu besprechen.","A dió, len és chia ALA-t ad, ami nem egyenértékű az EPA+DHA-val; hal nélkül az algaalapú kiegészítőről orvossal vagy dietetikussal egyeztess.");
+A('labels',"Verifică etichetele: pâinea, pastele și conservele pot ascunde ouă, lapte, soia sau gluten. Crustaceele, susanul, țelina, muștarul și lupinul nu sunt folosite în plan.","Check labels: bread, pasta and canned foods can hide egg, milk, soy or gluten. Shellfish, sesame, celery, mustard and lupin are not used in the plan.","Vérifiez les étiquettes : pain, pâtes et conserves peuvent cacher œuf, lait, soja ou gluten. Crustacés, sésame, céleri, moutarde et lupin ne sont pas utilisés dans le plan.","Controlla le etichette: pane, pasta e conserve possono nascondere uovo, latte, soia o glutine. Crostacei, sesamo, sedano, senape e lupino non sono usati nel piano.","Revisa las etiquetas: el pan, la pasta y las conservas pueden ocultar huevo, leche, soja o gluten. Crustáceos, sésamo, apio, mostaza y altramuz no se usan en el plan.","Verifique os rótulos: pão, massa e conservas podem esconder ovo, leite, soja ou glúten. Crustáceos, sésamo, aipo, mostarda e tremoço não são usados no plano.","Prüfe die Etiketten: Brot, Nudeln und Konserven können Ei, Milch, Soja oder Gluten verstecken. Krebstiere, Sesam, Sellerie, Senf und Lupine werden im Plan nicht verwendet.","Ellenőrizd a címkéket: a kenyér, tészta és konzerv rejthet tojást, tejet, szóját vagy glutént. Rákfélék, szezám, zeller, mustár és csillagfürt nem szerepel a tervben.");
+A('plan_var',"Cu restricțiile tale există puține șabloane de mese; unele se vor repeta în cursul săptămânii.","With your restrictions there are few meal templates, so some meals will repeat during the week.","Avec vos restrictions, il y a peu de modèles de repas ; certains se répéteront durant la semaine.","Con le tue restrizioni ci sono pochi modelli di pasto; alcuni si ripeteranno durante la settimana.","Con tus restricciones hay pocas plantillas de comidas; algunas se repetirán durante la semana.","Com as suas restrições há poucos modelos de refeições; alguns repetir-se-ão durante a semana.","Mit deinen Einschränkungen gibt es wenige Mahlzeitenvorlagen; einige wiederholen sich im Lauf der Woche.","A korlátozásaiddal kevés étkezési sablon áll rendelkezésre, ezért néhány étkezés ismétlődik a héten.");
+A('imp_q',"Importul înlocuiește profilul, jurnalul și greutățile actuale din acest browser. Continui?","Importing replaces the profile, diary and weights currently stored in this browser. Continue?","L’importation remplace le profil, le journal et les poids actuellement enregistrés dans ce navigateur. Continuer ?","L’importazione sostituisce profilo, diario e pesi attualmente salvati in questo browser. Continuare?","La importación sustituye el perfil, el diario y los pesos guardados actualmente en este navegador. ¿Continuar?","A importação substitui o perfil, o diário e os pesos atualmente guardados neste navegador. Continuar?","Der Import ersetzt Profil, Tagebuch und Gewichte, die derzeit in diesem Browser gespeichert sind. Fortfahren?","Az importálás felváltja a böngészőben tárolt profilt, naplót és testsúlyadatokat. Folytatod?");
+A('method_h',"Metodă și limite","Method and limits","Méthode et limites","Metodo e limiti","Método y límites","Método e limites","Methode und Grenzen","Módszer és korlátok");
+A('method',"Metodă: metabolismul bazal se estimează cu ecuația Mifflin–St Jeor; consumul total = metabolism bazal × factor de activitate (1,2–1,9). Deficitul (10–20%, maximum 1000 kcal/zi) sau excesul (≈10%) se aplică acestui consum; aplicația nu coboară sub 1200 kcal/zi (1500 la bărbați în scădere ponderală). Proteinele (0,9–1,6 g/kg, mai mult la slăbire, la peste 65 de ani sau cu efort intens, maximum 1,8) se calculează pe greutatea reală, sau pe una ajustată dacă IMC depășește 30. IMC și intervalul sănătos (18,5–24,9) sunt orientative și pot diferi la unele populații și la sportivi cu masă musculară mare. Planul de mese folosește valori medii pe 100 g și șabloane fixe; alimentele sunt filtrate după dietă, alergii și afecțiuni, dar verifică întotdeauna etichetele.","Method: basal metabolic rate is estimated with the Mifflin–St Jeor equation; total daily expenditure = BMR × activity factor (1.2–1.9). A deficit (10–20%, at most 1,000 kcal/day) or surplus (≈10%) is applied to that figure; the app never goes below 1,200 kcal/day (1,500 for men who are losing weight). Protein (0.9–1.6 g/kg, more when losing weight, over 65 or training hard, capped at 1.8) uses actual body weight, or an adjusted weight above BMI 30. BMI and the healthy range (18.5–24.9) are only indicative and may differ in some populations and in muscular athletes. The meal plan uses average values per 100 g and fixed templates; foods are filtered by diet, allergies and conditions, but always check product labels.","Méthode : le métabolisme de base est estimé par l’équation de Mifflin–St Jeor ; dépense totale = métabolisme de base × facteur d’activité (1,2–1,9). Un déficit (10–20 %, au maximum 1 000 kcal/jour) ou un surplus (≈10 %) s’applique à cette valeur ; l’application ne descend jamais sous 1 200 kcal/jour (1 500 pour les hommes qui perdent du poids). Les protéines (0,9–1,6 g/kg, davantage en cas de perte de poids, après 65 ans ou d’entraînement intense, plafonnées à 1,8) se calculent sur le poids réel, ou sur un poids ajusté si l’IMC dépasse 30. L’IMC et la plage saine (18,5–24,9) sont indicatifs et peuvent différer selon les populations et chez les sportifs musclés. Le plan de repas utilise des valeurs moyennes pour 100 g et des modèles fixes ; les aliments sont filtrés selon le régime, les allergies et les pathologies, mais vérifiez toujours les étiquettes.","Metodo: il metabolismo basale è stimato con l’equazione di Mifflin–St Jeor; dispendio totale = metabolismo basale × fattore di attività (1,2–1,9). Un deficit (10–20%, al massimo 1000 kcal/giorno) o un surplus (≈10%) si applica a questo valore; l’app non scende mai sotto 1200 kcal/giorno (1500 per gli uomini che dimagriscono). Le proteine (0,9–1,6 g/kg, di più se si dimagrisce, oltre i 65 anni o con allenamento intenso, massimo 1,8) sono calcolate sul peso reale, o su un peso corretto se il BMI supera 30. BMI e intervallo salutare (18,5–24,9) sono indicativi e possono variare in alcune popolazioni e negli atleti muscolosi. Il piano pasti usa valori medi per 100 g e modelli fissi; gli alimenti sono filtrati per dieta, allergie e condizioni, ma controlla sempre le etichette.","Método: el metabolismo basal se estima con la ecuación de Mifflin–St Jeor; gasto total = metabolismo basal × factor de actividad (1,2–1,9). Se aplica un déficit (10–20 %, como máximo 1000 kcal/día) o un superávit (≈10 %) a esa cifra; la aplicación nunca baja de 1200 kcal/día (1500 en hombres que pierden peso). La proteína (0,9–1,6 g/kg, más al adelgazar, a partir de los 65 años o con entrenamiento intenso, máximo 1,8) se calcula con el peso real, o con un peso ajustado si el IMC supera 30. El IMC y el rango saludable (18,5–24,9) son orientativos y pueden variar en algunas poblaciones y en deportistas musculosos. El plan de comidas usa valores medios por 100 g y plantillas fijas; los alimentos se filtran según dieta, alergias y afecciones, pero revisa siempre las etiquetas.","Método: o metabolismo basal é estimado com a equação de Mifflin–St Jeor; gasto total = metabolismo basal × fator de atividade (1,2–1,9). Aplica-se um défice (10–20%, no máximo 1000 kcal/dia) ou um excedente (≈10%) a esse valor; a aplicação nunca desce abaixo de 1200 kcal/dia (1500 nos homens que perdem peso). A proteína (0,9–1,6 g/kg, mais ao emagrecer, após os 65 anos ou com treino intenso, máximo 1,8) calcula-se com o peso real, ou com um peso ajustado se o IMC for superior a 30. O IMC e o intervalo saudável (18,5–24,9) são indicativos e podem diferir em algumas populações e em atletas musculados. O plano de refeições usa valores médios por 100 g e modelos fixos; os alimentos são filtrados por dieta, alergias e condições, mas verifique sempre os rótulos.","Methode: Der Grundumsatz wird mit der Mifflin-St-Jeor-Gleichung geschätzt; Gesamtumsatz = Grundumsatz × Aktivitätsfaktor (1,2–1,9). Auf diesen Wert wird ein Defizit (10–20 %, höchstens 1000 kcal/Tag) oder Überschuss (≈10 %) angewendet; die App geht nie unter 1200 kcal/Tag (1500 bei Männern, die abnehmen). Eiweiß (0,9–1,6 g/kg, mehr beim Abnehmen, über 65 oder bei hartem Training, höchstens 1,8) wird auf das tatsächliche Gewicht bezogen, bei BMI über 30 auf ein angepasstes Gewicht. BMI und gesunder Bereich (18,5–24,9) sind nur Richtwerte und können bei manchen Bevölkerungsgruppen und muskulösen Sportlern abweichen. Der Speiseplan nutzt Durchschnittswerte pro 100 g und feste Vorlagen; Lebensmittel werden nach Ernährungsform, Allergien und Erkrankungen gefiltert, prüfe aber immer die Produktetiketten.","Módszer: az alapanyagcserét a Mifflin–St Jeor egyenlettel becsüljük; teljes napi energiafelhasználás = alapanyagcsere × aktivitási tényező (1,2–1,9). Erre az értékre energiahiányt (10–20%, legfeljebb 1000 kcal/nap) vagy többletet (≈10%) alkalmazunk; az alkalmazás sosem megy 1200 kcal/nap alá (1500 a fogyó férfiaknál). A fehérjét (0,9–1,6 g/ttkg, fogyásnál, 65 év felett vagy kemény edzésnél több, legfeljebb 1,8) a tényleges testsúlyból számoljuk, 30 feletti BMI-nél korrigált súlyból. A BMI és az egészséges tartomány (18,5–24,9) tájékoztató jellegű, egyes népcsoportoknál és izmos sportolóknál eltérhet. Az étrend 100 g-ra vonatkozó átlagértékeket és rögzített sablonokat használ; az ételeket étrend, allergia és betegség szerint szűrjük, de mindig ellenőrizd a termékcímkéket.");
+A('th_nut',"Nutrient","Nutrient","Nutriment","Nutriente","Nutriente","Nutriente","Nährstoff","Tápanyag");
+A('th_val',"Valoare de referință","Reference value","Valeur de référence","Valore di riferimento","Valor de referencia","Valor de referência","Referenzwert","Referenciaérték");
+A('oftarget',"din țintă","of target","de l’objectif","dell’obiettivo","del objetivo","da meta","vom Ziel","a célból");
+A('group',"Grupă","Group","Groupe","Gruppo","Grupo","Grupo","Gruppe","Csoport");
+A('wsaved',"Greutate salvată; profilul a fost actualizat.","Weight saved; your profile was updated.","Poids enregistré ; votre profil a été mis à jour.","Peso salvato; il profilo è stato aggiornato.","Peso guardado; tu perfil se ha actualizado.","Peso guardado; o perfil foi atualizado.","Gewicht gespeichert; dein Profil wurde aktualisiert.","Testsúly mentve; a profilod frissült.");
+A('cancel',"Anulează","Cancel","Annuler","Annulla","Cancelar","Cancelar","Abbrechen","Mégse");
+A('langlbl',"Limbă","Language","Langue","Lingua","Idioma","Idioma","Sprache","Nyelv");
+A('theme',"Temă","Theme","Thème","Tema","Tema","Tema","Darstellung","Téma");
+A('t_plan',"Plan","Plan","Plan","Piano","Plan","Plano","Plan","Terv");
+A('t_foods',"Alimente","Foods","Aliments","Alimenti","Alimentos","Alimentos","Essen","Ételek");
+
+/* ---------- sources ---------- */
+var SRC={
+  who:{s:'WHO',n:'WHO – Healthy diet (fact sheet)',u:'https://www.who.int/news-room/fact-sheets/detail/healthy-diet'},
+  whopa:{s:'WHO PA',n:'WHO – Physical activity (fact sheet)',u:'https://www.who.int/news-room/fact-sheets/detail/physical-activity'},
+  efsa:{s:'EFSA',n:'EFSA – Dietary Reference Values (DRV Finder)',u:'https://www.efsa.europa.eu/en/press/news/181129-1'},
+  harvard:{s:'Harvard',n:'Harvard T.H. Chan School of Public Health – Healthy Eating Plate',u:'https://nutritionsource.hsph.harvard.edu/healthy-eating-plate/'},
+  med:{s:'PREDIMED',n:'Estruch et al., NEJM 2018 – PREDIMED (Mediterranean diet)',u:'https://pubmed.ncbi.nlm.nih.gov/30285333/'},
+  cdc:{s:'CDC',n:'CDC – Steps for losing weight',u:'https://www.cdc.gov/healthy-weight-growth/losing-weight/index.html'},
+  ada:{s:'ADA',n:'American Diabetes Association – Food & nutrition',u:'https://diabetes.org/food-nutrition'},
+  nhlbi:{s:'NHLBI',n:'NHLBI (NIH) – DASH eating plan',u:'https://www.nhlbi.nih.gov/education/dash-eating-plan'},
+  aha:{s:'AHA',n:'American Heart Association – Saturated fats',u:'https://www.heart.org/en/healthy-living/healthy-eating/eat-smart/fats/saturated-fats'},
+  issn:{s:'ISSN',n:'ISSN position stand: protein and exercise (Jäger et al., 2017)',u:'https://doi.org/10.1186/s12970-017-0177-8'},
+  wcrf:{s:'WCRF',n:'World Cancer Research Fund – Limit red and processed meat',u:'https://www.wcrf.org/research-policy/evidence-for-our-recommendations/limit-red-processed-meat/'},
+  espen:{s:'ESPEN',n:'Volkert et al., Clin Nutr 2019 – ESPEN guideline: nutrition and hydration in geriatrics',u:'https://pubmed.ncbi.nlm.nih.gov/30005900/'},
+  aand:{s:'AND',n:'Academy of Nutrition and Dietetics – Position on vegetarian diets (2016)',u:'https://pubmed.ncbi.nlm.nih.gov/27886704/'}
+};
+var SRCORDER=['who','whopa','efsa','harvard','med','cdc','ada','nhlbi','aha','issn','wcrf','espen','aand'];
+
+/* ---------- food database (per 100 g; cooked weights where relevant) ---------- */
+/* id, kcal, protein, carbs, fat, fibre, group, diet-level(0 vegan..3 meat), tags, names ro|en|fr|it|es|pt|de|hu */
+var RAW=[
+['oat',379,13.2,67.7,6.5,10.1,'gr',0,'gl',"Fulgi de ovăz|Rolled oats|Flocons d’avoine|Fiocchi d’avena|Copos de avena|Flocos de aveia|Haferflocken|Zabpehely"],
+['wwb',250,12,42,3.5,6.5,'gr',0,'gl',"Pâine integrală|Wholemeal bread|Pain complet|Pane integrale|Pan integral|Pão integral|Vollkornbrot|Teljes kiőrlésű kenyér"],
+['rye',259,8.5,48.3,3.3,5.8,'gr',0,'gl',"Pâine de secară|Rye bread|Pain de seigle|Pane di segale|Pan de centeno|Pão de centeio|Roggenbrot|Rozskenyér"],
+['brr',123,2.7,25.6,1,1.6,'gr',0,'',"Orez brun fiert|Brown rice, cooked|Riz complet cuit|Riso integrale cotto|Arroz integral cocido|Arroz integral cozido|Naturreis, gekocht|Barna rizs, főzve"],
+['whr',130,2.7,28.2,0.3,0.4,'gr',0,'hg',"Orez alb fiert|White rice, cooked|Riz blanc cuit|Riso bianco cotto|Arroz blanco cocido|Arroz branco cozido|Weißer Reis, gekocht|Fehér rizs, főzve"],
+['wwp',124,5.3,26.5,0.5,4.5,'gr',0,'gl',"Paste integrale fierte|Wholewheat pasta, cooked|Pâtes complètes cuites|Pasta integrale cotta|Pasta integral cocida|Massa integral cozida|Vollkornnudeln, gekocht|Teljes kiőrlésű tészta, főzve"],
+['pot',87,1.9,20.1,0.1,1.8,'gr',0,'hg',"Cartofi fierți|Boiled potatoes|Pommes de terre bouillies|Patate bollite|Patatas cocidas|Batatas cozidas|Salzkartoffeln|Főtt burgonya"],
+['swp',90,2,20.7,0.2,3.3,'gr',0,'',"Cartofi dulci copți|Baked sweet potato|Patate douce cuite|Patata dolce al forno|Boniato asado|Batata-doce assada|Ofensüßkartoffel|Sült édesburgonya"],
+['qui',120,4.4,21.3,1.9,2.8,'gr',0,'',"Quinoa fiartă|Quinoa, cooked|Quinoa cuit|Quinoa cotta|Quinoa cocida|Quinoa cozida|Quinoa, gekocht|Quinoa, főzve"],
+['pol',70,1.6,15,0.3,1,'gr',0,'',"Mămăligă|Polenta (cornmeal porridge)|Polenta (mămăligă)|Polenta (mămăligă)|Polenta (mămăligă)|Polenta (mămăligă)|Polenta (Maisbrei)|Puliszka (mămăligă)"],
+['bwh',92,3.4,19.9,0.6,2.7,'gr',0,'',"Hrișcă fiartă|Buckwheat, cooked|Sarrasin cuit|Grano saraceno cotto|Trigo sarraceno cocido|Trigo-sarraceno cozido|Buchweizen, gekocht|Hajdina, főzve"],
+['len',116,9,20,0.4,7.9,'lg',0,'',"Linte fiartă|Lentils, cooked|Lentilles cuites|Lenticchie cotte|Lentejas cocidas|Lentilhas cozidas|Linsen, gekocht|Lencse, főzve"],
+['chk',164,8.9,27.4,2.6,7.6,'lg',0,'',"Năut fiert|Chickpeas, cooked|Pois chiches cuits|Ceci cotti|Garbanzos cocidos|Grão-de-bico cozido|Kichererbsen, gekocht|Csicseriborsó, főzve"],
+['bean',139,9.7,25.1,0.4,6.3,'lg',0,'',"Fasole albă fiartă|White beans, cooked|Haricots blancs cuits|Fagioli bianchi cotti|Alubias blancas cocidas|Feijão branco cozido|Weiße Bohnen, gekocht|Fehér bab, főzve"],
+['tof',144,17.3,2.8,8.7,2.3,'lg',0,'so',"Tofu ferm|Firm tofu|Tofu ferme|Tofu compatto|Tofu firme|Tofu firme|Fester Tofu|Kemény tofu"],
+['soym',33,2.8,1.7,1.6,0.4,'lg',0,'so',"Lapte de soia (neîndulcit)|Soy milk (unsweetened)|Lait de soja nature|Latte di soia non zuccherato|Bebida de soja sin azúcar|Bebida de soja sem açúcar|Sojadrink, ungesüßt|Cukrozatlan szójaital"],
+['bro',35,2.4,7.2,0.4,3.3,'vg',0,'',"Broccoli fiert|Broccoli, cooked|Brocoli cuit|Broccoli cotti|Brócoli cocido|Brócolos cozidos|Brokkoli, gegart|Brokkoli, főzve"],
+['spi',23,2.9,3.6,0.4,2.2,'vg',0,'',"Spanac|Spinach|Épinards|Spinaci|Espinacas|Espinafres|Spinat|Spenót"],
+['tom',18,0.9,3.9,0.2,1.2,'vg',0,'',"Roșii|Tomatoes|Tomates|Pomodori|Tomates|Tomates|Tomaten|Paradicsom"],
+['cuc',15,0.7,3.6,0.1,0.5,'vg',0,'',"Castraveți|Cucumber|Concombre|Cetriolo|Pepino|Pepino|Gurke|Uborka"],
+['car',41,0.9,9.6,0.2,2.8,'vg',0,'',"Morcovi|Carrots|Carottes|Carote|Zanahorias|Cenouras|Karotten|Sárgarépa"],
+['pep',31,1,6,0.3,2.1,'vg',0,'',"Ardei gras|Bell pepper|Poivron|Peperone|Pimiento|Pimento|Paprika|Kaliforniai paprika"],
+['cab',25,1.3,5.8,0.1,2.5,'vg',0,'',"Varză albă|White cabbage|Chou blanc|Cavolo bianco|Repollo|Couve branca|Weißkohl|Fehér káposzta"],
+['let',15,1.4,2.9,0.2,1.3,'vg',0,'',"Salată verde|Green salad leaves|Salade verte|Insalata verde|Ensalada verde|Salada verde|Blattsalat|Zöldsaláta"],
+['zuc',17,1.2,3.1,0.3,1,'vg',0,'',"Dovlecei|Zucchini|Courgettes|Zucchine|Calabacín|Courgettes|Zucchini|Cukkini"],
+['epl',35,0.8,8.7,0.2,2.5,'vg',0,'',"Vinete coapte|Roasted aubergine|Aubergine rôtie|Melanzane al forno|Berenjena asada|Beringela assada|Gebackene Aubergine|Sült padlizsán"],
+['mush',22,3.1,3.3,0.3,1,'vg',0,'',"Ciuperci|Mushrooms|Champignons|Funghi|Champiñones|Cogumelos|Champignons|Gomba"],
+['cau',25,1.9,5,0.3,2,'vg',0,'',"Conopidă|Cauliflower|Chou-fleur|Cavolfiore|Coliflor|Couve-flor|Blumenkohl|Karfiol"],
+['pum',26,1,6.5,0.1,0.5,'vg',0,'',"Dovleac|Pumpkin|Citrouille|Zucca|Calabaza|Abóbora|Kürbis|Tök"],
+['bet',44,1.7,10,0.2,2,'vg',0,'',"Sfeclă roșie fiartă|Beetroot, cooked|Betterave cuite|Barbabietola cotta|Remolacha cocida|Beterraba cozida|Rote Bete, gekocht|Cékla, főzve"],
+['sau',19,0.9,4.3,0.1,2.9,'vg',0,'na',"Varză murată|Sauerkraut|Choucroute|Crauti|Chucrut|Chucrute|Sauerkraut|Savanyú káposzta"],
+['app',52,0.3,13.8,0.2,2.4,'fr',0,'',"Măr|Apple|Pomme|Mela|Manzana|Maçã|Apfel|Alma"],
+['ban',89,1.1,22.8,0.3,2.6,'fr',0,'',"Banană|Banana|Banane|Banana|Plátano|Banana|Banane|Banán"],
+['ora',47,0.9,11.8,0.1,2.4,'fr',0,'',"Portocală|Orange|Orange|Arancia|Naranja|Laranja|Orange|Narancs"],
+['ber',57,0.7,14.5,0.3,2.4,'fr',0,'',"Fructe de pădure|Mixed berries|Fruits rouges|Frutti di bosco|Frutos rojos|Frutos vermelhos|Beeren|Erdei gyümölcsök"],
+['pea',57,0.4,15.2,0.1,3.1,'fr',0,'',"Pară|Pear|Poire|Pera|Pera|Pera|Birne|Körte"],
+['plu',46,0.7,11.4,0.3,1.4,'fr',0,'',"Prune|Plums|Prunes|Prugne|Ciruelas|Ameixas|Pflaumen|Szilva"],
+['kiw',61,1.1,14.7,0.5,3,'fr',0,'',"Kiwi|Kiwi|Kiwi|Kiwi|Kiwi|Quivi|Kiwi|Kivi"],
+['wal',654,15.2,13.7,65.2,6.7,'ns',0,'nu',"Nuci|Walnuts|Noix|Noci|Nueces|Nozes|Walnüsse|Dió"],
+['alm',579,21.2,21.6,49.9,12.5,'ns',0,'nu',"Migdale|Almonds|Amandes|Mandorle|Almendras|Amêndoas|Mandeln|Mandula"],
+['pnb',588,25,20,50,6,'ns',0,'nu',"Unt de arahide|Peanut butter|Beurre de cacahuète|Burro di arachidi|Crema de cacahuete|Manteiga de amendoim|Erdnussbutter|Mogyoróvaj"],
+['chi',486,16.5,42.1,30.7,34.4,'ns',0,'',"Semințe de chia|Chia seeds|Graines de chia|Semi di chia|Semillas de chía|Sementes de chia|Chiasamen|Chiamag"],
+['flx',534,18.3,28.9,42.2,27.3,'ns',0,'',"Semințe de in măcinate|Ground flaxseed|Graines de lin moulues|Semi di lino macinati|Lino molido|Linhaça moída|Gemahlene Leinsamen|Őrölt lenmag"],
+['sun',584,20.8,20,51.5,8.6,'ns',0,'',"Semințe de floarea-soarelui|Sunflower seeds|Graines de tournesol|Semi di girasole|Pipas de girasol|Sementes de girassol|Sonnenblumenkerne|Napraforgómag"],
+['pmk',559,30.2,10.7,49,6,'ns',0,'',"Semințe de dovleac|Pumpkin seeds|Graines de courge|Semi di zucca|Pipas de calabaza|Sementes de abóbora|Kürbiskerne|Tökmag"],
+['oil',884,0,0,100,0,'ns',0,'',"Ulei de măsline extravirgin|Extra virgin olive oil|Huile d’olive extra vierge|Olio extravergine d’oliva|Aceite de oliva virgen extra|Azeite extra virgem|Natives Olivenöl extra|Extra szűz olívaolaj"],
+['avo',160,2,8.5,14.7,6.7,'ns',0,'',"Avocado|Avocado|Avocat|Avocado|Aguacate|Abacate|Avocado|Avokádó"],
+['yog',61,3.5,4.7,3.3,0,'da',1,'la',"Iaurt simplu|Plain yoghurt|Yaourt nature|Yogurt naturale|Yogur natural|Iogurte natural|Naturjoghurt|Natúr joghurt"],
+['gyo',73,10,3.9,1.9,0,'da',1,'la',"Iaurt grecesc 2%|Greek yoghurt 2%|Yaourt grec 2 %|Yogurt greco 2%|Yogur griego 2 %|Iogurte grego 2%|Griechischer Joghurt 2 %|Görög joghurt 2%"],
+['mlk',47,3.4,4.9,1.5,0,'da',1,'la',"Lapte 1,5%|Milk 1.5%|Lait demi-écrémé|Latte parzialmente scremato|Leche semidesnatada|Leite meio-gordo|Milch 1,5 %|Tej 1,5%"],
+['tel',264,14.2,4.1,21.3,0,'da',1,'la na pg',"Telemea / feta|Feta cheese|Feta|Feta|Queso feta|Queijo feta|Feta|Feta sajt"],
+['cot',98,11.1,3.4,4.3,0,'da',1,'la',"Brânză de vaci|Cottage cheese|Fromage blanc grainé|Fiocchi di latte|Requesón|Queijo cottage|Hüttenkäse|Túró"],
+['egg',143,12.6,0.7,9.5,0,'da',1,'eg',"Ouă|Eggs|Œufs|Uova|Huevos|Ovos|Eier|Tojás"],
+['sal',206,22.1,0,12.4,0,'fs',2,'fi',"Somon la cuptor|Baked salmon|Saumon au four|Salmone al forno|Salmón al horno|Salmão assado|Gebackener Lachs|Sült lazac"],
+['tun',116,25.5,0,0.8,0,'fs',2,'fi na',"Ton la conservă (în apă)|Canned tuna (in water)|Thon en boîte (au naturel)|Tonno in scatola (al naturale)|Atún en conserva (al natural)|Atum em conserva (ao natural)|Thunfisch aus der Dose (im eigenen Saft)|Konzerv tonhal (vízben)"],
+['cod',105,22.8,0,0.9,0,'fs',2,'fi',"Cod / merluciu fiert|Cod / hake, cooked|Cabillaud / merlu cuit|Merluzzo / nasello cotto|Bacalao / merluza cocida|Bacalhau / pescada cozida|Kabeljau / Seehecht, gegart|Tőkehal / heki, főzve"],
+['chb',165,31,0,3.6,0,'mt',3,'',"Piept de pui la grătar|Grilled chicken breast|Blanc de poulet grillé|Petto di pollo alla griglia|Pechuga de pollo a la plancha|Peito de frango grelhado|Gegrillte Hähnchenbrust|Grillezett csirkemell"],
+['tkb',135,30,0,0.7,0,'mt',3,'',"Piept de curcan|Turkey breast|Blanc de dinde|Petto di tacchino|Pechuga de pavo|Peito de peru|Putenbrust|Pulykamell"],
+['bef',195,28,0,8.5,0,'mt',3,'',"Vită slabă|Lean beef|Bœuf maigre|Manzo magro|Ternera magra|Carne de vaca magra|Mageres Rindfleisch|Sovány marhahús"],
+['prk',200,27,0,9,0,'mt',3,'po',"Cotlet de porc slab|Lean pork loin|Longe de porc maigre|Lonza di maiale magra|Lomo de cerdo magro|Lombo de porco magro|Mageres Schweinefilet|Sovány sertéskaraj"],
+['liv',167,24.5,0.9,6.5,0,'mt',3,'pr',"Ficat de pui|Chicken liver|Foie de volaille|Fegato di pollo|Hígado de pollo|Fígado de frango|Hühnerleber|Csirkemáj"]
+];
+var FOODS=RAW.map(function(r){return {id:r[0],k:r[1],p:r[2],c:r[3],f:r[4],fb:r[5],g:r[6],d:r[7],t:r[8]?r[8].split(' '):[],n:r[9].split('|')}});
+var FM=Object.create(null);FOODS.forEach(function(f){FM[f.id]=f});
+var GROUPS=['gr','lg','vg','fr','ns','da','fs','mt'];
+var DL={omni:3,pesc:2,veg:1,vegan:0};
+var ACT=[1.2,1.375,1.55,1.725,1.9];
+var PK=[0.9,1.0,1.2,1.4,1.6];
+function fname(f){return f.n[LI]||f.n[1]}
+function okFood(f,p){
+  if(f.d>DL[p.diet])return false;
+  for(var i=0;i<f.t.length;i++){var x=f.t[i];
+    if(p.al.indexOf(x)>=0)return false;
+    if(x==='po'&&p.nopork)return false;
+    if(x==='pr'&&p.cond.indexOf('preg')>=0)return false;
+    if(x==='pg'&&p.cond.indexOf('preg')>=0)return false;
+    if(x==='na'&&p.cond.indexOf('htn')>=0)return false;}
+  return true;
+}
+
+/* ---------- meal templates (cooked/ready weights, grams) ---------- */
+var RT=[
+['b','oat50 mlk200 ban100 wal15'],['b','oat50 soym200 ber100 chi10'],['b','egg100 wwb60 tom100 cuc80'],['b','gyo200 ber100 wal15'],
+['b','egg100 avo60 tom100 spi40'],['b','cot150 pea120 sun15 rye40'],['b','chi25 soym200 ber100 ban60'],['b','bwh150 app120 pmk15'],
+['b','wwb70 avo70 tom100 pmk10'],['b','tof120 pep80 spi60 rye50'],['b','yog200 oat40 app120 alm15'],
+['l','chb130 brr150 bro150 oil10'],['l','sal120 swp200 spi100 oil8'],['l','len200 brr100 car80 oil8'],['l','chk180 qui120 cuc100 tom100 oil10'],
+['l','bean200 pol200 cab100 oil8'],['l','bef120 wwp150 tom150 mush80 oil8'],['l','tof150 brr150 bro120 pep80 oil8'],['l','cod150 swp150 zuc150 oil10'],
+['l','tkb130 qui120 cau120 oil8'],['l','egg100 wwp130 zuc120 spi80 oil8'],['l','prk120 bwh150 cab150 oil8'],['l','tun100 wwb80 let60 tom100 oil8'],['l','len180 swp150 spi100 pmk10'],
+['d','sal110 bro150 qui100 oil8'],['d','chb120 let80 tom100 cuc80 wwb40 oil10'],['d','egg100 zuc150 mush100 wwb50 oil8'],['d','epl200 chk120 tom100 oil10 pmk10'],
+['d','tof150 bro150 brr100 pep80 oil8'],['d','cod140 pot150 car100 oil8'],['d','bean150 pum200 spi60 oil8'],['d','tkb120 zuc150 cau100 swp100 oil8'],
+['d','cot150 cuc100 tom100 rye50 sun10'],['d','bef100 pep120 bwh120 let60 oil8'],['d','len150 car100 zuc100 rye50 oil8'],
+['s','app150 alm20'],['s','gyo150 ber80'],['s','ora150 pmk15'],['s','car100 pnb15'],['s','pea150 wal15'],['s','kiw150 sun15'],
+['s','cot100 plu100'],['s','egg50 cuc100'],['s','soym200 ban80'],['s','ber100 pmk15'],['s','ban100 sun15']
+];
+var TPL=RT.map(function(r){return {s:r[0],it:r[1].split(' ').map(function(x){var m=x.match(/^([a-z]+)(\d+)$/);return [m[1],+m[2]]})}});
+var SLOTS={3:[['b',.28],['l',.40],['d',.32]],4:[['b',.25],['l',.35],['s',.12],['d',.28]],5:[['b',.22],['s',.10],['l',.33],['s',.10],['d',.25]]};
+
+/* ---------- state (sanitised: storage and imports are untrusted) ---------- */
+var TABS=[['profile','t_profile'],['report','t_report'],['plan','t_plan'],['foods','t_foods'],['log','t_log'],['src','t_src']];
+var TABIDS=TABS.map(function(x){return x[0]});
+var ICONS={
+  profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+  report:'<path d="M4 20V11M10 20V4M16 20v-7M2 20h20"/>',
+  plan:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  foods:'<path d="M12 7c-3-3-9-1-8 6 .8 5 4 8 8 6 4 2 7.2-1 8-6 1-7-5-9-8-6zM12 7c0-2 1-4 3-5"/>',
+  log:'<path d="M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6zM9 3v18M12 8h4M12 12h4"/>',
+  src:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 1 2-2h13"/>'
+};
+var DEF={sex:'f',age:35,h:165,w:65,tw:'',waist:'',act:1,goal:'maint',pace:2,diet:'omni',al:[],nopork:false,cond:[],meals:4};
+var AL_ALL=['gl','la','nu','eg','fi','so'],CO_ALL=['dm2','htn','chol','preg','ckd','ed'];
+var DATE_RE=/^\d{4}-\d{2}-\d{2}$/;
+function fin(v){if(typeof v==='string'&&v.trim()!=='')v=Number(v);return(typeof v==='number'&&isFinite(v)&&Math.abs(v)<100000)?v:''}
+function oneOf(v,arr,d){return(typeof v==='string'&&arr.indexOf(v)>=0)?v:d}
+function cleanProfile(o){
+  var q=Object.assign({},DEF);q.al=[];q.cond=[];
+  if(!o||typeof o!=='object'||Array.isArray(o))return q;
+  ['age','h','w'].forEach(function(k){var x=fin(o[k]);q[k]=(x===''?DEF[k]:x)});
+  ['tw','waist'].forEach(function(k){q[k]=fin(o[k])});
+  q.sex=oneOf(o.sex,['f','m'],DEF.sex);
+  q.goal=oneOf(o.goal,['lose','maint','gain'],DEF.goal);
+  q.diet=oneOf(o.diet,['omni','pesc','veg','vegan'],DEF.diet);
+  q.act=intIn(o.act,[0,1,2,3,4],DEF.act);
+  q.pace=intIn(o.pace,[1,2,3],DEF.pace);
+  q.meals=intIn(o.meals,[3,4,5],DEF.meals);
+  q.nopork=(o.nopork===true);
+  if(Array.isArray(o.al))AL_ALL.forEach(function(a){if(o.al.indexOf(a)>=0)q.al.push(a)});
+  if(Array.isArray(o.cond))CO_ALL.forEach(function(a){if(o.cond.indexOf(a)>=0)q.cond.push(a)});
+  if(q.sex==='m')q.cond=q.cond.filter(function(x){return x!=='preg'});
+  return q;
+}
+function cleanLog(o){
+  var out={};
+  if(!o||typeof o!=='object'||Array.isArray(o))return out;
+  Object.keys(o).forEach(function(k){
+    if(!DATE_RE.test(k))return;
+    var d=o[k];if(!d||typeof d!=='object')return;
+    var it=[];
+    if(Array.isArray(d.it))d.it.slice(0,500).forEach(function(x){
+      if(!x||typeof x!=='object')return;
+      var g=Math.round(Number(x.g));
+      if(typeof x.f==='string'&&FM[x.f]&&g>0&&g<=2000&&['b','s','l','d'].indexOf(x.m)>=0)it.push({f:x.f,g:g,m:x.m});
+    });
+    var w=Math.round(Number(d.w));
+    out[k]={it:it,w:(isFinite(w)&&w>=0&&w<=50)?w:0};
+  });
+  return out;
+}
+function cleanWeights(a){
+  if(!Array.isArray(a))return [];
+  var m={};
+  a.slice(0,5000).forEach(function(x){
+    if(!x||typeof x!=='object')return;
+    var w=fin(x.w);
+    if(typeof x.d==='string'&&DATE_RE.test(x.d)&&w!==''&&w>=25&&w<=300)m[x.d]=w;
+  });
+  return Object.keys(m).sort().map(function(d){return{d:d,w:m[d]}});
+}
+var P=cleanProfile(store.get('profile',null));
+var LOG=cleanLog(store.get('log',null));
+var WT=cleanWeights(store.get('weights',null));
+var tab=(function(){
+  var h=(location.hash||'').replace('#','');
+  if(TABIDS.indexOf(h)>=0)return h;
+  var s=store.get('tab','profile');
+  return(typeof s==='string'&&TABIDS.indexOf(s)>=0)?s:'profile';
+})();
+var seed=(function(){var n=Math.floor(Number(store.get('seed',1)));return(isFinite(n)&&n>=1&&n<1000000)?n:1})();
+var planDay=0;
+function pad(n){return n<10?'0'+n:''+n}
+function today(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+var logDate=today();
+function saveP(){store.set('profile',P)}
+function getLog(d){return LOG[d]||{it:[],w:0}}
+function dayLog(d){if(!LOG[d])LOG[d]={it:[],w:0};return LOG[d]}
+
+/* ---------- validation and safety locks ---------- */
+var RNG={age:[18,110],h:[100,230],w:[25,300],tw:[25,300],waist:[40,200]};
+function problems(p){
+  var L=[];
+  var chk=function(k,req,lab){
+    var v=p[k];
+    if(v===''||v===undefined||v===null){if(req)L.push([k,lab]);return}
+    var n=Number(v);
+    if(!(n>=RNG[k][0]&&n<=RNG[k][1]))L.push([k,lab]);
+  };
+  if(!(p.age!==''&&Number(p.age)<18))chk('age',true,'age');
+  chk('h',true,'height');chk('w',true,'weight');chk('tw',false,'tweight');chk('waist',false,'waist');
+  return L;
+}
+function lockOf(p){
+  if(p.age!==''&&Number(p.age)<18)return 'minor';
+  if(p.cond.indexOf('ed')>=0)return 'ed';
+  if(p.cond.indexOf('ckd')>=0)return 'ckd';
+  return null;
+}
+
+/* ---------- calculations ---------- */
+function calc(p){
+  if(problems(p).length)return null;
+  var age=+p.age,h=+p.h,w=+p.w,m=p.sex==='m';
+  var dm=p.cond.indexOf('dm2')>=0,chol=p.cond.indexOf('chol')>=0,preg=p.cond.indexOf('preg')>=0;
+  var bmi=w/Math.pow(h/100,2);
+  var bmr=10*w+6.25*h-5*age+(m?5:-161);
+  var tdee=bmr*ACT[p.act];
+  var goal=p.goal;
+  if(preg)goal='maint';
+  if(goal==='lose'&&bmi<18.5)goal='maint';
+  if(goal==='gain'&&bmi>=30)goal='maint';
+  var kcal=tdee;
+  if(goal==='lose'){
+    var pct0={1:.10,2:.15,3:.20}[p.pace]||.15;
+    var def=Math.min(tdee*pct0,1000);
+    kcal=tdee-def;
+    var mn=m?1500:1200;
+    if(kcal<mn)kcal=Math.min(mn,tdee);
+  }
+  if(goal==='gain')kcal=tdee*1.10;
+  var low=false;
+  if(kcal<1200){kcal=1200;low=true}
+  kcal=Math.round(kcal/10)*10;
+  if(goal==='lose'&&kcal>tdee*0.97){goal='maint';kcal=Math.max(1200,Math.round(tdee/10)*10)}
+  var pct=goal==='lose'?1-kcal/tdee:0;
+  var rate=goal==='lose'?(tdee-kcal)*7/7700:0;
+  var w25=25*Math.pow(h/100,2),rw=bmi>30?w25+0.25*(w-w25):w;
+  var pk=PK[p.act];
+  if(goal==='lose')pk+=0.2;
+  if(goal==='gain')pk=Math.max(pk,1.6);
+  if(age>=65)pk=Math.max(pk,1.2);
+  pk=Math.min(pk,1.8);
+  var prot=Math.min(pk*rw,0.35*kcal/4);
+  var fatPct=dm?.35:.30;
+  var fat=fatPct*kcal/9,carb=(kcal-4*prot-9*fat)/4;
+  if(carb<130){carb=130;fat=Math.max(.2*kcal/9,(kcal-4*prot-4*carb)/9)}
+  var hmin=18.5*Math.pow(h/100,2),hmax=24.9*Math.pow(h/100,2);
+  var tw=+p.tw,twlow=(p.tw!==''&&tw>0&&tw<hmin),weeks=null;
+  if(p.tw!==''&&tw>0&&!twlow&&Math.abs(tw-w)>0.4){
+    if(goal==='lose'&&tw<w&&rate>0.05)weeks=Math.ceil((w-tw)/rate);
+    if(goal==='gain'&&tw>w){var gr=(kcal-tdee)*7/7700;if(gr>0.05)weeks=Math.ceil((tw-w)/gr)}
+    if(weeks&&weeks>260)weeks=null;
+  }
+  var wh=+p.waist;
+  return{bmi:bmi,bmr:bmr,tdee:tdee,goal:goal,adj:(p.goal!==goal),low:low,twlow:twlow,kcal:kcal,pct:pct,rate:rate,
+    prot:Math.round(prot),pk:prot/w,carb:Math.round(carb),fat:Math.round(fat),fatPct:Math.round(fat*9/kcal*100),
+    sat:Math.round((chol?.06:.10)*kcal/9),sug:Math.round(.10*kcal/4),sug5:Math.round(.05*kcal/4),
+    fiber:Math.min(40,Math.max(dm?30:25,Math.round(14*kcal/1000))),water:m?2.5:2.0,
+    hmin:hmin,hmax:hmax,weeks:weeks,tw:tw,whtr:(p.waist!==''&&wh>30)?wh/h:null};
+}
+function tipsFor(p,c){
+  var L=[],age=+p.age,add=function(k,src,ic){var a=Array.prototype.slice.call(arguments,3);L.push({k:k,src:src,ic:ic,a:a})};
+  if(c.goal==='lose')add('tip_lose',['cdc'],'⚖️',fmt(c.kcal),Math.round(c.pct*100),fmt(c.rate,2));
+  else if(c.goal==='gain')add('tip_gain',['issn'],'💪',fmt(c.kcal));
+  else add('tip_maint',['efsa'],'⚖️',fmt(c.kcal));
+  if(c.bmi<18.5)add('tip_bmilow',['who'],'⚠️');
+  if(c.bmi>=30)add('tip_bmihigh',['cdc'],'⚠️');
+  if(p.cond.indexOf('preg')>=0){add('tip_preg',['who','efsa'],'🤰');add('tip_preg2',['efsa'],'🤰')}
+  if(p.cond.indexOf('dm2')>=0)add('tip_dm2',['ada'],'🩸');
+  if(p.cond.indexOf('htn')>=0)add('tip_htn',['nhlbi','who'],'❤️');
+  if(p.cond.indexOf('chol')>=0)add('tip_chol',['aha','med'],'🫀');
+  add('tip_plate',['harvard','who','med'],'🍽️');
+  add('tip_protein',['efsa','issn'],'🥚',fmt(c.prot),fmt(c.pk,1));
+  add('tip_fiber',['efsa'],'🌾',fmt(c.fiber));
+  add('tip_sugar',['who'],'🍬',fmt(c.sug),fmt(c.sug5));
+  add('tip_salt',['who','nhlbi'],'🧂');
+  add('tip_fat',['who','aha','med'],'🫒',fmt(c.sat),c.fatPct);
+  if(p.diet==='omni'||p.diet==='pesc')add('tip_animal',['wcrf','med'],'🐟');
+  if(p.diet==='vegan')add('tip_vegan',['aand'],'🌱');
+  if(p.diet==='veg')add('tip_veg',['aand'],'🥕');
+  add('tip_process',['harvard','who'],'🏠');
+  add('tip_water',['efsa','who'],'💧',fmt(c.water,1));
+  add('tip_move',['whopa'],'🚶');
+  if(age>=65)add('tip_senior',['espen'],'🧓');
+  return L;
+}
+function nutrients(p){
+  var m=p.sex==='m',age=+p.age,preg=p.cond.indexOf('preg')>=0,vg=p.diet==='vegan',vt=p.diet==='veg',al=p.al,mo=new Date().getMonth(),winter=mo>=9||mo<=2;
+  var f=!m;
+  return[
+    {id:'fe',v:(preg||(f&&age<50))?'16 mg':'11 mg',s:'len chk bean spi tof pmk qui bef liv',pr:(f&&age<50)||preg||vg||vt},
+    {id:'ca',v:(age<25?'1000':'950')+' mg',s:'yog mlk cot tel tof alm chi bro',pr:vg||al.indexOf('la')>=0||age>=50},
+    {id:'d',v:'15 µg (600 IU)',s:'sal tun egg',note:'nd',pr:winter},
+    {id:'b12',v:'4 µg',s:'egg yog cot sal tun bef chb',note:vg?'nb12':null,pr:vg||vt||age>=50},
+    {id:'fol',v:preg?'500–600 µg':'330 µg',s:'len spi bro chk bean avo bet',pr:preg||(f&&age<50)},
+    {id:'mg',v:(m?350:300)+' mg',s:'pmk alm oat chi bwh bean',pr:false},
+    {id:'k',v:'3500 mg',s:'pot ban bean spi swp bet',pr:p.cond.indexOf('htn')>=0},
+    {id:'i',v:preg?'200 µg':'150 µg',s:'cod tun yog mlk egg sal',note:'ni',pr:preg||vg},
+    {id:'zn',v:(m?fmt(9.4,1)+'–'+fmt(16.3,1):fmt(7.5,1)+'–'+fmt(12.7,1))+' mg',s:'pmk bef len chk chb alm',pr:vg||vt},
+    {id:'o3',v:'250 mg',s:'sal tun cod',note:(vg||al.indexOf('fi')>=0||p.diet==='veg')?'no3':null,pr:vg||vt||al.indexOf('fi')>=0},
+    {id:'c',v:(m?110:95)+' mg',s:'pep ora kiw bro ber cab',pr:false}
+  ];
+}
+
+/* ---------- plan generation ---------- */
+function rng(sd){var a=sd>>>0;return function(){a=(a+0x6D2B79F5)|0;var t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296}}
+function shuffle(arr,r){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(r()*(i+1));var x=a[i];a[i]=a[j];a[j]=x}return a}
+function mealTotals(items){var o={k:0,p:0,c:0,f:0,fb:0};items.forEach(function(it){var f=FM[it.f||it.id],q=it.g/100;o.k+=f.k*q;o.p+=f.p*q;o.c+=f.c*q;o.f+=f.f*q;o.fb+=f.fb*q});return o}
+function hasHG(t){return t.it.some(function(x){return FM[x[0]].t.indexOf('hg')>=0})}
+function buildPlan(p,c,sd){
+  var r=rng(sd*7919+13),slots=SLOTS[p.meals]||SLOTS[4],pools={},dm=p.cond.indexOf('dm2')>=0;
+  ['b','l','d','s'].forEach(function(s){
+    var pool=shuffle(TPL.filter(function(t){return t.s===s&&t.it.every(function(x){return okFood(FM[x[0]],p)})}),r);
+    if(dm)pool=pool.filter(function(t){return !hasHG(t)}).concat(pool.filter(hasHG));
+    pools[s]=pool;
+  });
+  var boost=shuffle(['alm','wal','sun','pmk','avo'].filter(function(id){return okFood(FM[id],p)}),r);
+  var days=[];
+  days.limited=['b','l','d'].some(function(s){return pools[s].length<7});
+  for(var d=0;d<7;d++){
+    var sn=0;
+    var meals=slots.map(function(sl){
+      var s=sl[0],pool=pools[s];
+      if(!pool.length)return{s:s,none:true};
+      var shift=0;if(s==='s'){shift=sn*Math.floor(pool.length/2);sn++}
+      var tp=pool[(d+shift)%pool.length];
+      var base=0;tp.it.forEach(function(x){base+=FM[x[0]].k*x[1]/100});
+      var want=c.kcal*sl[1],cap=2.5,fct=clamp(want/base,.5,cap);
+      var items=tp.it.map(function(x){var q=x[1]*fct;q=q<40?Math.max(1,Math.round(q)):Math.round(q/5)*5;return{id:x[0],g:q}});
+      var gap=want-mealTotals(items).k,n=0;
+      while(gap>80&&fct>=cap-1e-9&&n<4){
+        var bid=n===0?'oil':(boost.length?boost[(n-1)%boost.length]:'oil');
+        var bf=FM[bid],g=Math.min(bid==='oil'?25:40,Math.round(gap/bf.k*100/5)*5);
+        if(g<5)break;
+        var ex=null;items.forEach(function(i){if(i.id===bid)ex=i});
+        if(ex)ex.g+=g;else items.push({id:bid,g:g});
+        gap-=bf.k*g/100;n++;
+      }
+      return{s:s,items:items,tot:mealTotals(items)};
+    });
+    days.push(meals);
+  }
+  return days;
+}
+
+/* ---------- rendering helpers ---------- */
+var view=$('#view');
+function lockBox(l){return '<div class="note" role="status">'+esc(t('lock_'+l))+'</div>'}
+function lockCard(l){return '<section class="card warn"><p style="margin:0">'+esc(t('lock_'+l))+'</p></section>'}
+function probHTML(L){return L.map(function(x){return '<div>'+esc(t('err_range',t(x[1]),RNG[x[0]][0],RNG[x[0]][1]))+'</div>'}).join('')}
+function liveHTML(){
+  var lk=lockOf(P);if(lk)return lockBox(lk);
+  var L=problems(P);
+  return L.length?'<div class="note" role="alert">'+probHTML(L)+'</div>':'';
+}
+function srcChips(a){return a.map(function(id){return '<a class="src" href="#src-'+id+'" data-a="src" data-id="'+id+'">'+esc(SRC[id].s)+'</a>'}).join(' ')}
+function slotName(s){return t('m_'+s)}
+function pbar(v,max){var pc=max>0?v/max*100:0;return '<div class="bar" role="img" aria-label="'+Math.round(pc)+'%"><i class="'+(pc>110?'over':'')+'" style="width:'+Math.min(100,pc)+'%"></i></div>'}
+
+/* ----- profile ----- */
+function viewProfile(){
+  var lk=lockOf(P),sens=(lk==='ed');
+  var num=function(k,min,max,step,mode){return '<input type="number" inputmode="'+(mode||'numeric')+'" autocomplete="off" aria-describedby="pv" data-k="'+k+'" min="'+min+'" max="'+max+'" step="'+(step||1)+'" value="'+esc(P[k]===undefined?'':P[k])+'">'};
+  var sel=function(k,opts){return '<select data-k="'+k+'">'+opts.map(function(o){return '<option value="'+o[0]+'"'+(String(P[k])===String(o[0])?' selected':'')+'>'+esc(o[1])+'</option>'}).join('')+'</select>'};
+  var fld=function(l,inner){return '<label class="fld"><span>'+esc(t(l))+'</span>'+inner+'</label>'};
+  var chk=function(arr,val,label){return '<label class="chip"><input type="checkbox" data-arr="'+arr+'" value="'+val+'"'+(P[arr].indexOf(val)>=0?' checked':'')+'> '+esc(t(label))+'</label>'};
+  var h='<div class="cols2">';
+  h+='<section class="card"><h2>'+esc(t('p_basic'))+'</h2><div class="grid">'
+   +fld('sex',sel('sex',[['f',t('female')],['m',t('male')]]))+fld('age',num('age',18,110))+fld('height',num('h',100,230))+fld('weight',num('w',25,300,0.1,'decimal'))
+   +(sens?'':fld('tweight',num('tw',25,300,0.1,'decimal'))+fld('waist',num('waist',40,200)))
+   +'</div><div id="pv">'+liveHTML()+'</div></section>';
+  h+='<section class="card"><h2>'+esc(t('p_life'))+'</h2><div class="grid">'
+   +fld('activity',sel('act',[0,1,2,3,4].map(function(i){return [i,t('a'+(i+1))]})));
+  if(!sens){
+    h+=fld('goal',sel('goal',[['lose',t('g_lose')],['maint',t('g_maint')],['gain',t('g_gain')]]));
+    if(P.goal==='lose')h+=fld('pace',sel('pace',[1,2,3].map(function(i){return [i,t('pace'+i)]})));
+  }
+  h+='</div></section>';
+  h+='<section class="card"><h2>'+esc(t('p_food'))+'</h2><div class="grid">'
+   +fld('dtype',sel('diet',[['omni',t('d_omni')],['pesc',t('d_pesc')],['veg',t('d_veg')],['vegan',t('d_vegan')]]))
+   +fld('meals',sel('meals',[[3,'3'],[4,'4'],[5,'5']]))+'</div>'
+   +'<p class="mut" style="margin:14px 0 6px">'+esc(t('allerg'))+'</p><div class="chips">'
+   +['gl','la','nu','eg','fi','so'].map(function(a){return chk('al',a,'al_'+a)}).join('')
+   +'<label class="chip"><input type="checkbox" data-k="nopork"'+(P.nopork?' checked':'')+'> '+esc(t('nopork'))+'</label></div></section>';
+  h+='<section class="card"><h2>'+esc(t('p_health'))+'</h2><div class="chips">'
+   +['dm2','htn','chol','preg','ckd','ed'].filter(function(c){return c!=='preg'||P.sex==='f'}).map(function(c){return chk('cond',c,'c_'+c)}).join('')+'</div></section>';
+  h+='<div class="span2 row"><button class="pri" data-a="tab" data-id="report">'+esc(t('gen'))+' →</button><span class="mut" style="font-size:.85rem">'+esc(t('autosave'))+'</span></div>';
+  h+='<p class="span2 mut" style="font-size:.82rem;margin:0">'+esc(t('disc'))+'</p></div>';
+  return h;
+}
+
+/* ----- report ----- */
+function viewReport(){
+  var lk=lockOf(P);if(lk)return lockCard(lk);
+  var pr=problems(P);if(pr.length)return '<section class="card warn"><div>'+probHTML(pr)+'</div><div class="row" style="margin-top:12px"><button class="pri" data-a="tab" data-id="profile">'+esc(t('t_profile'))+' →</button></div></section>';
+  var c=calc(P);
+  var h='<div class="cols2">';
+  var notes=[];
+  if(c.adj)notes.push(t('note_adj'));
+  if(c.low)notes.push(t('note_low'));
+  if(c.twlow)notes.push(t('note_tw',fmt(c.hmin,1),fmt(c.hmax,1)));
+  if(notes.length)h+='<section class="card warn span2">'+notes.map(function(x){return '<p style="margin:0 0 6px">'+esc(x)+'</p>'}).join('')+'</section>';
+  var gl={lose:'g_lose',maint:'g_maint',gain:'g_gain'}[c.goal];
+  h+='<section class="card hero span2"><div><div class="big">'+fmt(c.kcal)+'<small>'+esc(t('kcal'))+'</small></div><div class="mut" style="margin-top:6px">'+esc(t('hero_h'))+'</div></div>'
+   +'<div><b>'+esc(t(gl))+'</b>'+(c.weeks?'<br><span class="mut">'+esc(t('weeks',fmt(c.weeks),fmt(c.tw,1)))+'</span>':'')+'</div></section>';
+  var cat=c.bmi<18.5?0:c.bmi<25?1:c.bmi<30?2:3;
+  h+='<section class="card span2"><div class="metrics">'
+   +'<div class="metric"><b>'+fmt(c.bmi,1)+'</b><span>'+esc(t('bmi'))+' · '+esc(t('bmi'+cat))+'</span></div>'
+   +'<div class="metric"><b>'+fmt(c.hmin,1)+'–'+fmt(c.hmax,1)+' kg</b><span>'+esc(t('hrange'))+'</span></div>'
+   +'<div class="metric"><b>'+fmt(c.bmr)+'</b><span>'+esc(t('bmr'))+'</span></div>'
+   +'<div class="metric"><b>'+fmt(c.tdee)+'</b><span>'+esc(t('tdee'))+'</span></div>'
+   +(c.whtr?'<div class="metric"><b>'+fmt(c.whtr,2)+'</b><span>'+esc(t('whtr'))+': '+esc(t(c.whtr<0.5?'whtr_ok':'whtr_hi'))+'</span></div>':'')
+   +'</div></section>';
+  var pP=Math.round(c.prot*4/c.kcal*100),pF=Math.round(c.fat*9/c.kcal*100),pC=Math.max(0,100-pP-pF);
+  h+='<section class="card"><h2>'+esc(t('macros'))+'</h2><div class="stack" role="img" aria-label="'+esc(t('macros'))+'">'
+   +'<i style="width:'+pP+'%;background:var(--c3)"></i><i style="width:'+pC+'%;background:var(--c1)"></i><i style="width:'+pF+'%;background:var(--c2)"></i></div>'
+   +'<div class="legend"><span style="--cc:var(--c3)">'+esc(t('protein'))+' '+pP+'%</span><span style="--cc:var(--c1)">'+esc(t('carbs'))+' '+pC+'%</span><span style="--cc:var(--c2)">'+esc(t('fat'))+' '+pF+'%</span></div>'
+   +'<table style="margin-top:10px"><tbody>'
+   +'<tr><td>'+esc(t('protein'))+'</td><td><b>'+fmt(c.prot)+' g</b></td><td class="mut">'+fmt(c.pk,1)+' g/kg</td></tr>'
+   +'<tr><td>'+esc(t('carbs'))+'</td><td><b>'+fmt(c.carb)+' g</b></td><td class="mut">'+pC+'%</td></tr>'
+   +'<tr><td>'+esc(t('fat'))+'</td><td><b>'+fmt(c.fat)+' g</b></td><td class="mut">'+pF+'%</td></tr>'
+   +'<tr><td>'+esc(t('fiber'))+'</td><td><b>≥ '+fmt(c.fiber)+' g</b></td><td class="mut">EFSA ≥25 g · 14 g/1000 kcal</td></tr></tbody></table></section>';
+  h+='<section class="card"><h2>'+esc(t('limits'))+'</h2><table><tbody>'
+   +'<tr><td>'+esc(t('satfat'))+'</td><td><b>'+fmt(c.sat)+' g</b></td></tr>'
+   +'<tr><td>'+esc(t('sugar'))+'</td><td><b>'+fmt(c.sug)+' g</b> <span class="mut">(≤ '+fmt(c.sug5)+' g)</span></td></tr>'
+   +'<tr><td>'+esc(t('salt'))+'</td><td><b>5 g</b></td></tr>'
+   +'<tr><td>'+esc(t('water'))+'</td><td><b>'+fmt(c.water,1)+' L</b></td></tr></tbody></table></section>';
+  var tl=tipsFor(P,c);
+  h+='<section class="card span2"><h2>'+esc(t('tips_h'))+'</h2><ul class="tips">'+tl.map(function(x){
+    return '<li><div class="ti" aria-hidden="true">'+x.ic+'</div><div><p>'+esc(t.apply(null,[x.k].concat(x.a)))+'</p><div class="chips">'+srcChips(x.src)+'</div></div></li>'}).join('')+'</ul></section>';
+  var nl=nutrients(P).sort(function(a,b){return(b.pr?1:0)-(a.pr?1:0)});
+  h+='<section class="card span2"><h2>'+esc(t('nut_h'))+'</h2><div class="tw"><table class="rt"><thead><tr><th>'+esc(t('th_nut'))+'</th><th>'+esc(t('th_val'))+'</th><th>'+esc(t('srccol'))+'</th></tr></thead><tbody>'
+   +nl.map(function(n){
+     var names=n.s.split(' ').filter(function(id){return okFood(FM[id],P)}).slice(0,6).map(function(id){return fname(FM[id])});
+     return '<tr><td><b>'+esc(t('n_'+n.id))+'</b>'+(n.pr?'<span class="tag">'+esc(t('prio'))+'</span>':'')+'</td><td style="white-space:nowrap">'+esc(n.v)+'</td><td>'
+       +(names.length?esc(names.join(', ')):'—')+(n.note?'<div class="mut" style="font-size:.8rem">'+esc(t(n.note))+'</div>':'')+'</td></tr>'}).join('')
+   +'</tbody></table></div><div style="margin-top:10px">'+srcChips(['efsa'])+'</div></section>';
+  h+='<p class="span2 mut" style="font-size:.82rem;margin:0">'+esc(t('disc'))+'</p></div>';
+  return h;
+}
+
+/* ----- plan ----- */
+function viewPlan(){
+  var lk=lockOf(P);if(lk)return lockCard(lk);
+  var c=calc(P);if(!c)return '<section class="card warn"><div>'+probHTML(problems(P))+'</div></section>';
+  var days=buildPlan(P,c,seed);
+  var loc=LANGS[LI];
+  var dn=function(i){try{return new Date(2024,0,1+i).toLocaleDateString(loc,{weekday:'long'})}catch(e){return 'D'+(i+1)}};
+  var h='<section class="card noprint"><div class="row sb"><h2 style="margin:0">'+esc(t('pl_h'))+' · '+fmt(c.kcal)+' '+esc(t('kcal'))+'</h2>'
+   +'<div class="row"><button data-a="regen">🔀 '+esc(t('pl_regen'))+'</button><button data-a="shop">🛒 '+esc(t('pl_shop'))+'</button><button data-a="print">🖨 '+esc(t('pl_print'))+'</button></div></div>'
+   +(days.limited?'<div class="note">'+esc(t('plan_var'))+'</div>':'')+'</section>';
+  h+='<div class="days noprint" role="group">'+days.map(function(d,i){return '<button type="button" data-a="day" data-id="'+i+'" aria-pressed="'+(i===planDay)+'" class="'+(i===planDay?'on':'')+'">'+esc(dn(i).slice(0,3).replace(/^./,function(x){return x.toUpperCase()}))+'</button>'}).join('')+'</div>';
+  days.forEach(function(meals,i){
+    var tot={k:0,p:0,c:0,f:0,fb:0};
+    var mh=meals.map(function(m){
+      if(m.none)return '<div class="meal"><h3>'+esc(slotName(m.s))+'</h3><p class="mut" style="margin:0">'+esc(t('nomeal'))+'</p></div>';
+      ['k','p','c','f','fb'].forEach(function(k){tot[k]+=m.tot[k]});
+      return '<div class="meal"><h3><span>'+esc(slotName(m.s))+'</span><span>'+fmt(m.tot.k)+' kcal</span></h3><ul>'
+       +m.items.map(function(it){return '<li>'+it.g+' g · '+esc(fname(FM[it.id]))+'</li>'}).join('')+'</ul>'
+       +'<div class="macs">'+esc(t('protein'))+' '+fmt(m.tot.p)+' g · '+esc(t('carbs'))+' '+fmt(m.tot.c)+' g · '+esc(t('fat'))+' '+fmt(m.tot.f)+' g</div></div>'}).join('');
+    h+='<div class="day'+(i===planDay?' on':'')+'"><h2 style="margin:4px 0 10px;text-transform:capitalize">'+esc(dn(i))+'</h2><div class="meals">'+mh+'</div>'
+     +'<div class="card"><b>'+esc(t('day_tot'))+': '+fmt(tot.k)+' kcal</b> <span class="mut">('+fmt(tot.k/c.kcal*100)+'% '+esc(t('oftarget'))+')</span>'
+     +'<div class="macs">'+esc(t('protein'))+' '+fmt(tot.p)+' g ('+fmt(tot.p/Math.max(1,c.prot)*100)+'%) · '+esc(t('carbs'))+' '+fmt(tot.c)+' g · '+esc(t('fat'))+' '+fmt(tot.f)+' g · '+esc(t('fiber'))+' '+fmt(tot.fb)+' g</div></div></div>';
+  });
+  h+='<p class="mut" style="font-size:.82rem">'+esc(t('cooked'))+' '+esc(t('labels'))+' '+esc(t('disc'))+'</p>';
+  return h;
+}
+function openShop(){
+  var c=calc(P);if(!c||lockOf(P))return;
+  var days=buildPlan(P,c,seed),agg={};
+  days.forEach(function(ms){ms.forEach(function(m){if(m.items)m.items.forEach(function(it){agg[it.id]=(agg[it.id]||0)+it.g})})});
+  var h='<h2 style="margin-top:0">🛒 '+esc(t('pl_shop'))+'</h2>';
+  GROUPS.forEach(function(g){
+    var ids=Object.keys(agg).filter(function(id){return FM[id].g===g});
+    if(!ids.length)return;
+    h+='<p class="mut" style="margin:10px 0 2px"><b>'+esc(t('g_'+g))+'</b></p><ul style="margin:0;padding-left:18px">'+ids.map(function(id){return '<li>'+esc(fname(FM[id]))+' — '+fmt(Math.round(agg[id]/10)*10)+' g</li>'}).join('')+'</ul>';
+  });
+  h+='<p class="mut" style="font-size:.8rem">'+esc(t('cooked'))+' '+esc(t('labels'))+'</p><div class="row"><button class="pri" data-a="dclose">'+esc(t('close'))+'</button></div>';
+  showDlg(h);
+}
+
+/* ----- foods ----- */
+function nonum(){var l=lockOf(P);return l==='ed'||l==='minor'}
+function viewFoods(){
+  var lk=lockOf(P);
+  return(nonum()?lockCard(lk):'')+'<section class="card"><div class="row"><input type="text" id="fq" aria-label="'+esc(t('fsearch'))+'" placeholder="'+esc(t('fsearch'))+'" autocomplete="off" style="flex:1 1 200px"><select id="fg" aria-label="'+esc(t('group'))+'"><option value="">'+esc(t('fall'))+'</option>'
+   +GROUPS.map(function(g){return '<option value="'+g+'">'+esc(t('g_'+g))+'</option>'}).join('')+'</select></div>'
+   +(nonum()?'':'<p class="mut" style="font-size:.8rem;margin:8px 0 0">'+esc(t('per100'))+' · kcal · '+esc(t('protein'))+' / '+esc(t('carbs'))+' / '+esc(t('fat'))+' / '+esc(t('fiber'))+' (g)</p>')
+   +'<div id="flist"></div></section>';
+}
+function renderFoodList(){
+  var box=$('#flist');if(!box)return;
+  var q=($('#fq').value||'').trim().toLowerCase(),g=$('#fg').value,nn=nonum();
+  var list=FOODS.filter(function(f){return(!g||f.g===g)&&(!q||fname(f).toLowerCase().indexOf(q)>=0)});
+  box.innerHTML=list.map(function(f){
+    var badges=f.t.filter(function(x){return AL_ALL.indexOf(x)>=0}).map(function(x){return '<span class="tag">'+esc(t('al_'+x))+'</span>'}).join('');
+    return '<div class="fl"><div><b>'+esc(fname(f))+'</b>'+badges+(nn?'':'<small>'+fmt(f.k)+' kcal · '+fmt(f.p,1)+' / '+fmt(f.c,1)+' / '+fmt(f.f,1)+' / '+fmt(f.fb,1)+'</small>')+'</div>'
+      +(nn?'':'<button type="button" data-a="addfood" data-id="'+f.id+'" aria-label="'+esc(t('addlog')+': '+fname(f))+'">＋</button>')+'</div>'}).join('');
+}
+
+/* ----- log ----- */
+function defSlot(){var h=new Date().getHours();return h<10?'b':h<12?'s':h<15?'l':h<18?'s':'d'}
+function viewLog(){
+  var lk=lockOf(P);if(lk)return lockCard(lk);
+  var c=calc(P);if(!c)return '<section class="card warn"><div>'+probHTML(problems(P))+'</div></section>';
+  var d=getLog(logDate),tot=mealTotals(d.it);
+  var h='<div class="cols2">';
+  h+='<section class="card"><label class="fld" style="max-width:220px"><span>'+esc(t('ldate'))+'</span><input type="date" id="ldate" max="'+today()+'" value="'+esc(logDate)+'"></label>';
+  h+='<div class="row" style="margin-top:12px"><select id="lf" aria-label="'+esc(t('t_foods'))+'" style="flex:1 1 180px">'+GROUPS.map(function(g){return '<optgroup label="'+esc(t('g_'+g))+'">'+FOODS.filter(function(f){return f.g===g}).map(function(f){return '<option value="'+f.id+'">'+esc(fname(f))+'</option>'}).join('')+'</optgroup>'}).join('')+'</select>'
+   +'<input type="number" id="lg" inputmode="numeric" min="1" max="2000" value="100" style="width:96px" aria-label="'+esc(t('grams'))+'">'
+   +'<select id="lm" aria-label="'+esc(t('meal'))+'">'+['b','s','l','d'].map(function(s){return '<option value="'+s+'"'+(s===defSlot()?' selected':'')+'>'+esc(slotName(s))+'</option>'}).join('')+'</select>'
+   +'<button class="pri" data-a="logadd">'+esc(t('ladd'))+'</button></div></section>';
+  h+='<section class="card"><h2>'+esc(t('lprog'))+'</h2>'
+   +[['kcal',tot.k,c.kcal,'kcal'],['protein',tot.p,c.prot,'g'],['carbs',tot.c,c.carb,'g'],['fat',tot.f,c.fat,'g'],['fiber',tot.fb,c.fiber,'g']].map(function(r){
+     return '<div class="prow"><span>'+esc(r[0]==='kcal'?'kcal':t(r[0]))+'</span>'+pbar(r[1],r[2])+'<span>'+fmt(r[1])+' / '+fmt(r[2])+' '+r[3]+'</span></div>'}).join('')+'</section>';
+  h+='<section class="card">';
+  if(!d.it.length)h+='<p class="mut" style="margin:0">'+esc(t('lempty'))+'</p>';
+  ['b','s','l','d'].forEach(function(s){
+    var its=d.it.map(function(x,i){return{x:x,i:i}}).filter(function(o){return o.x.m===s});
+    if(!its.length)return;
+    h+='<p style="margin:10px 0 2px"><b>'+esc(slotName(s))+'</b></p>'+its.map(function(o){var f=FM[o.x.f];return '<div class="fl"><div>'+o.x.g+' g · '+esc(fname(f))+'<small>'+fmt(f.k*o.x.g/100)+' kcal</small></div><button class="x" type="button" data-a="logdel" data-id="'+o.i+'" aria-label="×">×</button></div>'}).join('');
+  });
+  h+='</section>';
+  var glasses=Math.round(c.water*3);
+  h+='<section class="card"><h2>💧 '+esc(t('lwater'))+'</h2><div class="row"><button type="button" data-a="wminus" aria-label="−">−</button><b style="font-size:1.3rem">'+d.w+' / '+glasses+'</b><button type="button" data-a="wplus" aria-label="+">＋</button></div><div style="margin-top:8px">'+pbar(d.w,glasses)+'</div></section>';
+  h+='<section class="card"><h2>⚖️ '+esc(t('lweight'))+'</h2><div class="row"><input type="number" id="wv" inputmode="decimal" step="0.1" min="25" max="300" value="'+esc(P.w)+'" style="width:110px" aria-label="'+esc(t('lweight'))+' (kg)"><button data-a="wsave">'+esc(t('lsave'))+'</button></div>'+spark()+'</section>';
+  h+='<section class="card span2"><h2>'+esc(t('lbackup'))+'</h2><div class="row"><button data-a="export">⬇ '+esc(t('lexport'))+'</button><button data-a="import">⬆ '+esc(t('limport'))+'</button><input type="file" id="ifile" accept="application/json,.json" hidden></div><p class="mut" style="font-size:.82rem;margin:8px 0 0">'+esc(t('llocal'))+'</p></section></div>';
+  return h;
+}
+function spark(){
+  var a=WT.slice(-30);
+  if(!a.length)return '';
+  if(a.length<2)return '<p class="mut" style="margin:8px 0 0">'+fmt(a[0].w,1)+' kg · '+esc(a[0].d)+'</p>';
+  var mn=Math.min.apply(null,a.map(function(x){return x.w})),mx=Math.max.apply(null,a.map(function(x){return x.w})),rg=(mx-mn)||1;
+  var pts=a.map(function(x,i){return(i/(a.length-1)*300).toFixed(1)+','+(50-(x.w-mn)/rg*44-3).toFixed(1)}).join(' ');
+  var diff=a[a.length-1].w-a[0].w;
+  return '<svg viewBox="0 0 300 50" width="100%" height="60" role="img" aria-label="'+esc(t('lweight'))+'" style="margin-top:8px"><polyline fill="none" stroke="var(--acc)" stroke-width="2" points="'+pts+'"/></svg><p class="mut" style="margin:0">'+fmt(a[a.length-1].w,1)+' kg · '+(diff>0?'+':'')+fmt(diff,1)+' kg ('+esc(a[0].d)+' → '+esc(a[a.length-1].d)+')</p>';
+}
+
+/* ----- sources ----- */
+function viewSrc(){
+  return '<section class="card"><p style="margin-top:0">'+esc(t('s_intro'))+'</p>'+SRCORDER.map(function(id){var s=SRC[id];
+    return '<div class="sc" id="src-'+id+'"><b>'+esc(s.n)+'</b><p style="margin:4px 0">'+esc(t('ss_'+id))+'</p><a href="'+s.u+'" target="_blank" rel="noopener noreferrer">'+esc(t('s_open'))+' ↗</a></div>'}).join('')
+   +'</section><section class="card"><h2>'+esc(t('method_h'))+'</h2><p style="margin:0">'+esc(t('method'))+'</p></section><p class="mut" style="font-size:.82rem">'+esc(t('disc'))+'</p>';
+}
+
+/* ---------- dialog / toast ---------- */
+var dlg=$('#dlg');
+function showDlg(html){dlg.innerHTML='<div class="dbody">'+html+'</div>';if(dlg.showModal){try{dlg.showModal()}catch(e){dlg.setAttribute('open','')}}else dlg.setAttribute('open','')}
+function closeDlg(){if(dlg.close){try{dlg.close()}catch(e){dlg.removeAttribute('open')}}else dlg.removeAttribute('open')}
+function openAdd(id){
+  var f=FM[id];if(!f||nonum())return;
+  showDlg('<h2 style="margin-top:0">'+esc(fname(f))+'</h2><p class="mut">'+fmt(f.k)+' kcal '+esc(t('per100'))+'</p><div class="row">'
+   +'<input type="number" id="dg" inputmode="numeric" min="1" max="2000" value="100" style="width:100px" aria-label="'+esc(t('grams'))+'"> g '
+   +'<select id="dm" aria-label="'+esc(t('meal'))+'">'+['b','s','l','d'].map(function(s){return '<option value="'+s+'"'+(s===defSlot()?' selected':'')+'>'+esc(slotName(s))+'</option>'}).join('')+'</select></div>'
+   +'<div class="row" style="margin-top:14px"><button class="pri" data-a="doadd" data-id="'+id+'">'+esc(t('addlog'))+'</button><button data-a="dclose">'+esc(t('close'))+'</button></div>');
+}
+var toastT;
+function toast(msg){var el=$('#toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){el.classList.remove('on')},3500)}
+
+/* ---------- shell ---------- */
+function renderTabs(){$('#tabs').innerHTML=TABS.map(function(x){return '<button type="button" data-a="tab" data-id="'+x[0]+'" class="'+(x[0]===tab?'on':'')+'"'+(x[0]===tab?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true">'+ICONS[x[0]]+'</svg><span>'+esc(t(x[1]))+'</span></button>'}).join('')}
+function renderFoot(){$('#foot').innerHTML='FARFURIA v'+VERSION+' · '+VDATE+' · MIT · © Alexandru-Ionuț Chiuță (Alexio) · fără frontiere · trade-free<br><a href="https://buymeacoffee.com/echo.of.the.strings" target="_blank" rel="noopener noreferrer">☕ Buy Me a Coffee</a>'}
+function render(keep){
+  document.documentElement.lang=LANGS[LI];
+  $('#sub').textContent=t('sub');
+  $('#lang').setAttribute('aria-label',t('langlbl'));$('#theme').setAttribute('aria-label',t('theme'));
+  renderTabs();renderFoot();
+  var f={profile:viewProfile,report:viewReport,plan:viewPlan,foods:viewFoods,log:viewLog,src:viewSrc}[tab]||viewProfile;
+  try{view.innerHTML=f()}catch(e){view.innerHTML='<section class="card warn"><p style="margin:0">'+esc(t('imp_bad'))+'</p></section>'}
+  if(tab==='foods')renderFoodList();
+  if(keep){var n=$(keep);if(n)n.focus()}
+}
+function go(id){
+  tab=id;store.set('tab',tab);
+  try{history.pushState(null,'','#'+id)}catch(e){try{location.hash=id}catch(e2){}}
+  render();window.scrollTo(0,0);
+}
+function doLogAdd(){var g=Math.round(+$('#lg').value);if(g>0&&g<=2000){dayLog(logDate).it.push({f:$('#lf').value,g:g,m:$('#lm').value});store.set('log',LOG);render('#lg')}}
+function doWeightSave(){
+  var v=Number($('#wv').value);
+  if(!(v>=25&&v<=300))return;
+  WT=WT.filter(function(x){return x.d!==logDate});WT.push({d:logDate,w:v});WT.sort(function(x,y){return x.d<y.d?-1:1});
+  store.set('weights',WT);
+  if(WT[WT.length-1].d===logDate){P.w=v;saveP()}
+  render();toast(t('wsaved'));
+}
+
+/* ---------- events ---------- */
+var pendingImport=null;
+document.addEventListener('click',function(e){
+  var el=e.target.closest('[data-a]');if(!el)return;
+  var a=el.getAttribute('data-a'),id=el.getAttribute('data-id');
+  if(a==='src'||a==='tab')e.preventDefault();
+  if(a==='tab')go(id);
+  else if(a==='src'){go('src');var n=document.getElementById('src-'+id);if(n)n.scrollIntoView()}
+  else if(a==='day'){planDay=+id;render()}
+  else if(a==='regen'){seed=seed>=999999?1:seed+1;store.set('seed',seed);render()}
+  else if(a==='shop')openShop();
+  else if(a==='print')window.print();
+  else if(a==='addfood')openAdd(id);
+  else if(a==='dclose'){pendingImport=null;closeDlg()}
+  else if(a==='doadd'){var g=Math.round(+$('#dg').value);if(g>0&&g<=2000&&FM[id]){dayLog(logDate).it.push({f:id,g:g,m:$('#dm').value});store.set('log',LOG);toast(t('addlog'))}closeDlg();if(tab==='log')render()}
+  else if(a==='logadd')doLogAdd();
+  else if(a==='logdel'){dayLog(logDate).it.splice(+id,1);store.set('log',LOG);render()}
+  else if(a==='wplus'){dayLog(logDate).w=Math.min(50,dayLog(logDate).w+1);store.set('log',LOG);render()}
+  else if(a==='wminus'){var dl=dayLog(logDate);dl.w=Math.max(0,dl.w-1);store.set('log',LOG);render()}
+  else if(a==='wsave')doWeightSave();
+  else if(a==='export'){
+    var blob=new Blob([JSON.stringify({app:'farfuria',v:1,profile:P,log:LOG,weights:WT},null,1)],{type:'application/json'});
+    var u=URL.createObjectURL(blob),l=document.createElement('a');l.href=u;l.download='farfuria-'+today()+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000);
+  }
+  else if(a==='import')$('#ifile').click();
+  else if(a==='doimport'){
+    if(pendingImport){P=pendingImport.p;LOG=pendingImport.l;WT=pendingImport.w;saveP();store.set('log',LOG);store.set('weights',WT);pendingImport=null;closeDlg();render();toast(t('imp_ok'))}
+  }
+});
+view.addEventListener('input',function(e){
+  var el=e.target;
+  if(el.id==='fq'){renderFoodList();return}
+  var k=el.getAttribute('data-k');
+  if(k&&el.type==='number'){
+    if(el.value==='')P[k]='';else{var n=Number(el.value);P[k]=isFinite(n)?n:''}
+    saveP();var pv=$('#pv');if(pv)pv.innerHTML=liveHTML();
+  }
+});
+view.addEventListener('keydown',function(e){
+  if(e.key!=='Enter')return;
+  if(e.target.id==='lg'){e.preventDefault();doLogAdd()}
+  else if(e.target.id==='wv'){e.preventDefault();doWeightSave()}
+});
+view.addEventListener('change',function(e){
+  var el=e.target,k=el.getAttribute('data-k'),arr=el.getAttribute('data-arr');
+  if(el.id==='fg'){renderFoodList();return}
+  if(el.id==='ldate'){if(DATE_RE.test(el.value)&&el.value<=today()){logDate=el.value;render('#ldate')}return}
+  if(el.id==='ifile'){
+    var file=el.files&&el.files[0];if(!file)return;
+    if(file.size>5000000){toast(t('imp_bad'));el.value='';return}
+    var fr=new FileReader();
+    fr.onload=function(){
+      try{
+        var o=JSON.parse(fr.result);
+        if(!o||typeof o!=='object'||Array.isArray(o)||o.app!=='farfuria')throw new Error('bad');
+        pendingImport={p:cleanProfile(o.profile),l:cleanLog(o.log),w:cleanWeights(o.weights)};
+        showDlg('<h2 style="margin-top:0">'+esc(t('limport'))+'</h2><p>'+esc(t('imp_q'))+'</p><div class="row"><button class="pri" data-a="doimport">'+esc(t('limport'))+'</button><button data-a="dclose">'+esc(t('cancel'))+'</button></div>');
+      }catch(x){pendingImport=null;toast(t('imp_bad'))}
+      el.value='';
+    };
+    fr.onerror=function(){toast(t('imp_bad'))};
+    fr.readAsText(file);return;
+  }
+  if(arr){
+    var i=P[arr].indexOf(el.value);
+    if(el.checked&&i<0)P[arr].push(el.value);
+    if(!el.checked&&i>=0)P[arr].splice(i,1);
+    saveP();
+    if(arr==='cond')render('[data-arr="cond"][value="'+el.value+'"]');
+    else{var pv2=$('#pv');if(pv2)pv2.innerHTML=liveHTML()}
+    return;
+  }
+  if(k){
+    if(el.type==='checkbox'){P[k]=el.checked}
+    else if(el.tagName==='SELECT'){P[k]=(k==='act'||k==='pace'||k==='meals')?+el.value:el.value}
+    else return;
+    if(k==='sex'&&P.sex==='m')P.cond=P.cond.filter(function(x){return x!=='preg'});
+    saveP();
+    if(k==='goal'||k==='sex')render('[data-k="'+k+'"]');
+  }
+});
+dlg.addEventListener('click',function(e){if(e.target===dlg){pendingImport=null;closeDlg()}});
+dlg.addEventListener('close',function(){pendingImport=null});
+window.addEventListener('hashchange',function(){
+  var h=(location.hash||'').replace('#','');
+  if(TABIDS.indexOf(h)>=0&&h!==tab){tab=h;store.set('tab',tab);render();window.scrollTo(0,0)}
+});
+(function(){
+  var sel=$('#lang');sel.innerHTML=LN.map(function(n,i){return '<option value="'+i+'">'+n+'</option>'}).join('');sel.value=String(LI);
+  sel.addEventListener('change',function(){LI=+sel.value;store.set('lang',LI);closeDlg();render()});
+  var th=store.get('theme',null);if(th==='light'||th==='dark')document.documentElement.setAttribute('data-theme',th);
+  $('#theme').addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var dark=cur?cur==='dark':!!(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+    var nx=dark?'light':'dark';document.documentElement.setAttribute('data-theme',nx);store.set('theme',nx);
+  });
+})();
+render();
+})();
+</script>
+</body>
+</html>
