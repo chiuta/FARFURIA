@@ -13,7 +13,7 @@
     "farfuria."
   ],
   "sizeBytes": 310296,
-  "sha256": "b978be2cb798a66b486fdf10041acca032a37c0feafcce7fbc1560caea16307e",
+  "sha256": "6ab00312d4c81d24d2a2d27ccbcaf940095f85f3cd8889c99eaefc1134b938f1",
   "csp": {
     "present": true,
     "directives": {
@@ -53,7 +53,7 @@
     ]
   },
   "kit": {
-    "version": "1.4.0",
+    "version": "1.5.0",
     "modules": [
       "core",
       "store",
