@@ -7,18 +7,19 @@
   "description": "FARFURIA — offline digital dietitian: personalised calories, macros, 7-day meal plan and food diary. MIT, trade-free, no tracking.",
   "egress": [],
   "permissions": [
-    "localStorage"
+    "localStorage",
+    "WebGL"
   ],
   "storageKeys": [
     "farfuria."
   ],
-  "sizeBytes": 310296,
-  "sha256": "6ab00312d4c81d24d2a2d27ccbcaf940095f85f3cd8889c99eaefc1134b938f1",
+  "sizeBytes": 361946,
+  "sha256": "d8b2b578c01c1b148d2c3dd4a804d5c1944477ac4a97e4ad8e8c14ae6591e6b5",
   "csp": {
     "present": true,
     "directives": {
       "default-src": "'none'",
-      "script-src": "sha256×2",
+      "script-src": "sha256×3",
       "style-src": "'unsafe-inline'",
       "img-src": "data:",
       "base-uri": "'none'",
