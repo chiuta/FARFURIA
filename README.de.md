@@ -6,7 +6,7 @@ Ein kostenloser digitaler Diätassistent: personalisierte Kalorien-, Makro- und 
 
 **[App öffnen →](https://chiuta.github.io/farfuria/)**
 
-_Version: 1.1.0 · Letzte Aktualisierung: 2026-11-15_
+_Version: 1.1.1 · Letzte Aktualisierung: 2026-11-15_
 
 ## Funktionen
 

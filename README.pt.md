@@ -6,7 +6,7 @@ Um dietista digital gratuito: calorias, macronutrientes e cardápios personaliza
 
 **[Abrir a aplicação →](https://chiuta.github.io/farfuria/)**
 
-_Versão: 1.1.0 · Última atualização: 2026-11-15_
+_Versão: 1.1.1 · Última atualização: 2026-11-15_
 
 ## Funcionalidades
 
