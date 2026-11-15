@@ -6,7 +6,7 @@ Ingyenes digitális dietetikus: személyre szabott kalória-, makrotápanyag- é
 
 **[Alkalmazás megnyitása →](https://chiuta.github.io/farfuria/)**
 
-_Verzió: 1.0 · Utolsó frissítés: 2026-11-06_
+_Verzió: 1.1.0 · Utolsó frissítés: 2026-11-15_
 
 ## Funkciók
 

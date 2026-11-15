@@ -6,7 +6,7 @@ Dietetician digital gratuit: recomandări personalizate de calorii, macronutrien
 
 **[Deschide aplicația →](https://chiuta.github.io/farfuria/)**
 
-_Versiune: 1.0 · Ultima actualizare: 2026-11-06_
+_Versiune: 1.1.0 · Ultima actualizare: 2026-11-15_
 
 ## Funcții
 

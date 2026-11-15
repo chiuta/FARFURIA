@@ -6,7 +6,7 @@ A free digital dietitian: personalized calorie, macro and meal-plan guidance bas
 
 **[Open the app →](https://chiuta.github.io/farfuria/)**
 
-_Version: 1.0 · Last updated: 2026-11-06_
+_Version: 1.1.0 · Last updated: 2026-11-15_
 
 ## Features
 
