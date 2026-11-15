@@ -13,8 +13,8 @@
   "storageKeys": [
     "farfuria."
   ],
-  "sizeBytes": 405019,
-  "sha256": "894e4f17d2e295c1bc7c81dbd536220eb7c05fd2467f28b2a7a55d3c33cad944",
+  "sizeBytes": 430481,
+  "sha256": "c9ce5ba18904e82cadf2fb092089f5007c8db5c5c9a31d00a089514ebd439715",
   "csp": {
     "present": true,
     "directives": {
@@ -49,6 +49,7 @@
       "core",
       "store",
       "dialog",
+      "view",
       "a11y",
       "label",
       "bundle"
@@ -60,6 +61,7 @@
       "core",
       "store",
       "dialog",
+      "view",
       "a11y",
       "label",
       "bundle"
