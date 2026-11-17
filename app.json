@@ -2,8 +2,8 @@
   "schema": 1,
   "slug": "farfuria",
   "name": "FARFURIA — dietetician digital",
-  "version": "1.1.1",
-  "updated": "2026-11-15",
+  "version": "1.1.2",
+  "updated": "2026-11-17",
   "description": "FARFURIA — offline digital dietitian: personalised calories, macros, 7-day meal plan and food diary. MIT, trade-free, no tracking.",
   "egress": [],
   "permissions": [
@@ -13,13 +13,13 @@
   "storageKeys": [
     "farfuria."
   ],
-  "sizeBytes": 448517,
-  "sha256": "95960a8f6edf433e832ede771149ec9c46d6e1747eab45abe9c755bb7f4b0b53",
+  "sizeBytes": 508162,
+  "sha256": "b635ca634f27f6bb734e63af09478def87810a1fdfe269f2de9d4a49272e7c0d",
   "csp": {
     "present": true,
     "directives": {
       "default-src": "'none'",
-      "script-src": "sha256×3",
+      "script-src": "sha256×5",
       "style-src": "'unsafe-inline'",
       "img-src": "data:",
       "base-uri": "'none'",
@@ -57,7 +57,7 @@
     ]
   },
   "kit": {
-    "version": "1.7.0",
+    "version": "1.8.0",
     "modules": [
       "core",
       "store",
