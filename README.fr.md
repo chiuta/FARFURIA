@@ -6,7 +6,7 @@ Un diététicien numérique gratuit : calories, macronutriments et menus personn
 
 **[Ouvrir l’application →](https://chiuta.github.io/farfuria/)**
 
-_Version : 1.1.2 · Dernière mise à jour : 2026-11-17_
+_Version : 1.1.3 · Dernière mise à jour : 2026-11-20_
 
 ## Fonctionnalités
 

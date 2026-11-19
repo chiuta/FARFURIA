@@ -6,7 +6,7 @@ Un dietista digitale gratuito: calorie, macronutrienti e menu personalizzati, ba
 
 **[Apri l’app →](https://chiuta.github.io/farfuria/)**
 
-_Versione: 1.1.2 · Ultimo aggiornamento: 2026-11-17_
+_Versione: 1.1.3 · Ultimo aggiornamento: 2026-11-20_
 
 ## Funzionalità
 
